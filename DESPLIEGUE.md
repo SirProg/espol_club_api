@@ -294,6 +294,38 @@ cd /home/espol-club/www/espol_club_api && /home/espol-club/venv-espolclub/bin/py
 
 ---
 
+## 8.5 Poblar la API con datos de prueba
+
+Para que quien construya el panel React y la app React Native tenga con qué
+trabajar, hay un comando que puebla la base con los **clubes reales de ESPOL**:
+
+```bash
+cd ~/www/espol_club_api
+~/venv-espolclub/bin/python manage.py seed_espol_data
+```
+
+Genera 18 clubes con sus descripciones oficiales —tomadas del portal de la
+Unidad de Bienestar Politécnico—, ~70 cuentas de demostración, tres períodos
+académicos, eventos pasados con asistencia registrada y futuros con inscripción
+abierta, solicitudes en los tres estados y trámites GBP en los cuatro.
+
+**Todas las cuentas generadas usan la contraseña `espolclub2026`** y sus
+matrículas empiezan por `202490`. El comando reporta al terminar los líderes de
+los primeros clubes y algunos estudiantes sin club, para probar la postulación.
+
+A diferencia de `seed_demo_data`, este **sí puede correr en producción**: es
+justamente lo que consumirán los clientes. Avisa antes de empezar.
+
+Para regenerarlo desde cero: `seed_espol_data --reset --noinput`.
+
+> **Los dos conjuntos comparten los acrónimos KOKOA y MECATRÓNICA**, porque son
+> clubes reales de ESPOL y a la vez los ejemplos de MASTER §17. Si ejecutas
+> `seed_demo_data --reset` con el conjunto grande sembrado, esas dos fichas se
+> sustituyen por las versiones reducidas del documento maestro; el resto no se
+> toca, y el comando lo avisa antes.
+
+---
+
 ## 9. Actualizar el despliegue
 
 ```bash

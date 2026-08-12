@@ -39,6 +39,7 @@ from apps.clubs.services.clubs import add_club_document, create_club
 from apps.clubs.services.memberships import create_membership, freeze_expired_memberships
 from apps.clubs.services.roles import create_role
 from core import seed_data
+from core.seeding import confirm_destructive, ensure_pao_periods, purge_clubs
 
 Student = get_user_model()
 
@@ -128,79 +129,48 @@ class Command(BaseCommand):
     # -- Reset ------------------------------------------------------------
 
     def _reset(self, *, confirm):
-        if confirm:
+        # KOKOA y MECATRÓNICA existen en los DOS conjuntos: son clubes reales de
+        # ESPOL y a la vez los ejemplos de MASTER §17. Si el conjunto grande está
+        # sembrado, este reset se lleva por delante sus versiones —con decenas de
+        # miembros y eventos— y las sustituye por las de dos miembros del
+        # documento maestro. Conviene decirlo antes, no después.
+        from apps.clubs.models import Club as _Club
+
+        if _Club.objects.exclude(
+            acronym__in=["KOKOA", "MECATRÓNICA"]
+        ).exists():
             self.stdout.write(
                 self.style.WARNING(
-                    "Se eliminarán los clubes KOKOA y MECATRÓNICA con sus "
-                    "membresías, roles y documentos, las seis cuentas semilla y "
-                    "los períodos 2025-II y 2026-I."
+                    "Aviso: hay otros clubes en la base (probablemente de "
+                    "seed_espol_data). KOKOA y MECATRÓNICA se sustituirán por "
+                    "las versiones reducidas de MASTER §17; el resto no se toca."
                 )
             )
-            answer = input("Escribe 'si' para continuar: ")
-            if answer.strip().lower() not in {"si", "sí"}:
-                raise CommandError("Cancelado.")
 
-        # Imports locales: este comando vive en 'core', que por diseño no
-        # conoce a las apps del dominio. Aquí se hace la excepción porque
-        # limpiar exige nombrar todo lo que puede colgar de un club.
-        from apps.applications.models import MembershipApplication
-        from apps.dynamicforms.models import Form
-        from apps.events.models import (
-            Event,
-            EventAttendance,
-            EventRegistration,
-            EventStaff,
+        # El orden de borrado vive en core.seeding: es común a los dos comandos
+        # de sembrado y demasiado delicado para duplicarlo.
+        confirm_destructive(
+            self,
+            "Se eliminarán los clubes KOKOA y MECATRÓNICA con sus membresías, "
+            "roles y documentos, las seis cuentas semilla y los períodos "
+            "2025-II y 2026-I.",
+            noinput=not confirm,
         )
-        from apps.gbp.models import GbpDocumentProcess
-        from apps.notifications.models import Notification
 
-        with transaction.atomic():
-            clubs = Club.objects.filter(acronym__in=["KOKOA", "MECATRÓNICA"])
-            events = Event.objects.filter(club__in=clubs)
-
-            # El orden va de las hojas hacia la raíz, siguiendo los PROTECT.
-            # Las asistencias protegen a las inscripciones, que protegen a los
-            # formularios; las solicitudes también. Borrar en otro orden falla
-            # con ProtectedError, que es justo lo que queremos que pase si un
-            # día alguien añade una entidad nueva y olvida incluirla aquí.
-            EventAttendance.objects.filter(event__in=events).delete()
-            EventRegistration.objects.filter(event__in=events).delete()
-            EventStaff.objects.filter(event__in=events).delete()
-            events.delete()
-
-            MembershipApplication.objects.filter(club__in=clubs).delete()
-            GbpDocumentProcess.objects.filter(club__in=clubs).delete()
-            Form.objects.filter(club__in=clubs).delete()
-
-            Notification.objects.filter(club__in=clubs).delete()
-            Membership.objects.filter(club__in=clubs).delete()
-            ClubDocument.objects.filter(club__in=clubs).delete()
-            Role.objects.filter(club__in=clubs).delete()
-            clubs.delete()
-
-            students = Student.objects.filter(
-                enrollment__in=seed_data.SEEDED_ENROLLMENTS
-            )
-            Notification.objects.filter(user__in=students).delete()
-            students.delete()
-
-            PaoPeriod.objects.filter(
-                pao_period__in=[p["pao_period"] for p in seed_data.PAO_PERIODS]
-            ).delete()
+        purge_clubs(
+            ["KOKOA", "MECATRÓNICA"],
+            enrollments=seed_data.SEEDED_ENROLLMENTS,
+            pao_periods=[p["pao_period"] for p in seed_data.PAO_PERIODS],
+        )
 
         self.stdout.write(self.style.SUCCESS("Datos semilla eliminados."))
 
     # -- Sembrado ---------------------------------------------------------
 
     def _seed_paos(self):
-        paos = {}
-        for spec in seed_data.PAO_PERIODS:
-            paos[spec["pao_period"]] = create_pao(
-                pao_period=spec["pao_period"],
-                start_date=spec["start_date"],
-                end_date=spec["end_date"],
-                activate=spec["activate"],
-            )
+        # Reutiliza los períodos que ya existan: seed_espol_data comparte
+        # 2025-II y 2026-I, y recrearlos produciría un error engañoso.
+        paos = ensure_pao_periods(seed_data.PAO_PERIODS)
         self.stdout.write(f"  Períodos académicos: {len(paos)}")
         return paos
 
