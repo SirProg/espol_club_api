@@ -12,6 +12,8 @@ club, y así es como las consume el cliente.
 
 from django.urls import include, path
 
+from api.root import ApiV1RootView
+
 from api.v1.accounts.urls import auth_urlpatterns, student_urlpatterns
 from api.v1.applications.urls import (
     application_urlpatterns,
@@ -44,6 +46,7 @@ me_urlpatterns = (
 )
 
 urlpatterns = [
+    path("", ApiV1RootView.as_view(), name="root"),
     path("auth/", include((auth_urlpatterns, "auth"))),
     path("students/", include((me_urlpatterns, "students"))),
     path("catalogs/", include("api.v1.catalogs.urls")),

@@ -5,7 +5,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from api.root import ApiRootView
+
 urlpatterns = [
+    # Índice del servicio: sin él, la raíz devuelve un 404 que se lee
+    # como "esto está caído" aunque la API funcione.
+    path("", ApiRootView.as_view(), name="api-root"),
     path("admin/", admin.site.urls),
     path("api/", include("api.urls")),
 ]

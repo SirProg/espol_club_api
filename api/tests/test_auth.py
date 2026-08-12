@@ -509,3 +509,64 @@ class ThrottlingTests(ApiTestCase):
         self.assertEqual(bloqueado.status_code, 429)
         self.assertEqual(bloqueado.data["error"]["code"], "throttled")
         self.assertIn("Retry-After", bloqueado.headers)
+
+
+class ApiRootTests(TestCase):
+    """
+    El índice del servicio.
+
+    Existe porque un 404 en la raíz se lee como "el servicio está caído" aunque
+    la API funcione perfectamente. Los tests valen sobre todo como red de
+    seguridad: el índice construye sus enlaces con ``reverse()``, así que si
+    alguien renombra una ruta, esto falla en vez de devolver una URL rota.
+    """
+
+    def setUp(self):
+        cache.clear()
+        self.client = APIClient()
+
+    def test_la_raiz_identifica_el_servicio(self):
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data["service"], "ESPOLCLUB API")
+        self.assertEqual(response.data["status"], "ok")
+
+    def test_la_raiz_es_publica(self):
+        """Sin autenticar: es una tarjeta de presentación, no un recurso."""
+        self.assertEqual(self.client.get("/").status_code, 200)
+        self.assertEqual(self.client.get("/api/v1/").status_code, 200)
+
+    def test_el_indice_resuelve_todas_sus_rutas(self):
+        response = self.client.get("/api/v1/")
+
+        self.assertEqual(response.status_code, 200)
+        for grupo in ["auth", "student", "discovery", "gbp"]:
+            self.assertIn(grupo, response.data)
+        self.assertTrue(response.data["auth"]["login"].endswith("/api/v1/auth/login/"))
+
+    def test_el_indice_solo_contiene_urls_propias(self):
+        """
+        El índice publica rutas, no datos.
+
+        Comprobar que no aparezca la palabra "password" sería un mal test:
+        ``password_reset`` es un nombre de endpoint legítimo. Lo que sí importa
+        es que todo valor enlazable apunte a este mismo servicio y que ninguno
+        traiga datos de la base.
+        """
+        response = self.client.get("/api/v1/")
+
+        def urls(nodo):
+            if isinstance(nodo, dict):
+                for valor in nodo.values():
+                    yield from urls(valor)
+            elif isinstance(nodo, str) and nodo.startswith("http"):
+                yield nodo
+
+        encontradas = list(urls(response.data))
+        self.assertGreater(len(encontradas), 10)
+        for url in encontradas:
+            self.assertTrue(
+                url.startswith("http://testserver/api/v1/"),
+                f"El índice enlaza fuera del servicio: {url}",
+            )
