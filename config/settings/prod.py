@@ -61,6 +61,29 @@ DATABASES["default"]["CONN_MAX_AGE"] = 60  # noqa: F405
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True  # noqa: F405
 
 # ---------------------------------------------------------------------------
+# API: solo JSON
+# ---------------------------------------------------------------------------
+#
+# En desarrollo DRF añade su "API navegable", que renderiza HTML cuando el
+# cliente pide text/html —es decir, cuando abres una URL en el navegador—. En
+# producción se desactiva por tres motivos:
+#
+# 1. Es una herramienta de depuración: los clientes reales (app móvil y panel
+#    web) consumen JSON y nunca la usan.
+# 2. Publica la superficie completa de la API, con sus formularios, a cualquiera
+#    que abra una URL.
+# 3. Su plantilla depende de {% static %}, así que con el almacenamiento por
+#    manifiesto un archivo ausente convierte una petición desde el navegador en
+#    un error 500, mientras la misma URL con curl responde correctamente. Ese
+#    desajuste entre lo que ve un navegador y lo que ve un cliente es una fuente
+#    de diagnósticos equivocados.
+#
+# Con esto, el navegador y curl devuelven exactamente lo mismo.
+REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [  # noqa: F405
+    "rest_framework.renderers.JSONRenderer",
+]
+
+# ---------------------------------------------------------------------------
 # Archivos estáticos
 # ---------------------------------------------------------------------------
 #
