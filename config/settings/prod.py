@@ -93,9 +93,10 @@ REST_FRAMEWORK["DEFAULT_RENDERER_CLASSES"] = [  # noqa: F405
 
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    },
+    # No es el de WhiteNoise directamente: ver core/storage.py. El estricto
+    # convierte un archivo ausente del manifiesto en un 500 de la página
+    # completa, lo que puede dejar /admin/ inaccesible por un recurso menor.
+    "staticfiles": {"BACKEND": "core.storage.ResilientManifestStaticFilesStorage"},
 }
 
 MIDDLEWARE = MIDDLEWARE[:1] + [  # noqa: F405
