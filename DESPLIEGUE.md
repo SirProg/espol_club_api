@@ -75,23 +75,41 @@ Por SSH, en tu cuenta de AlwaysData:
 ```bash
 ssh espol-club@ssh-espol-club.alwaysdata.net
 cd ~/www
-git clone <url-de-tu-repositorio> espolclub
-cd espolclub
+git clone https://github.com/SirProg/espol_club_api.git
+cd espol_club_api
 ```
 
 Actualizar después es `git pull` más los pasos 5 y 6.
 
 ### Opción B — SFTP
 
-Sube el proyecto a `~/www/espolclub/`. **No subas** `.venv/`, `staticfiles/`,
+Sube el proyecto a `~/www/espol_club_api/`. **No subas** `.venv/`, `staticfiles/`,
 `media/`, `logs/`, `__pycache__/` ni `.env` — el `.gitignore` ya los excluye.
+
+### Antes de seguir: el sitio estático por defecto
+
+AlwaysData crea una cuenta con un sitio que sirve `~/www/` como archivos
+estáticos —de ahí el `index.html` que encuentras ahí—. Si sigue activo, **todo
+lo que pongas bajo `~/www/` queda accesible desde el navegador**, incluido el
+`.env` que vas a crear en el paso 4, con la contraseña de la base de datos, la
+del correo y la `SECRET_KEY`.
+
+Compruébalo en cuanto tengas el `.env`:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" https://espol-club.alwaysdata.net/espol_club_api/.env
+```
+
+`404` o `403` está bien. Si responde **`200`**, borra o reconfigura ese sitio en
+*Web → Sitios* y **cambia las tres contraseñas**: hay que darlas por
+comprometidas.
 
 ---
 
 ## 3. Entorno virtual y dependencias
 
 ```bash
-cd ~/www/espolclub
+cd ~/www/espol_club_api
 python3.12 -m venv ~/venv-espolclub
 ~/venv-espolclub/bin/pip install --upgrade pip
 ~/venv-espolclub/bin/pip install -r requirements.txt
@@ -108,7 +126,7 @@ El entorno virtual va **fuera** del directorio del proyecto a propósito: así u
 
 ## 4. Variables de entorno
 
-Crea `~/www/espolclub/.env` (no se versiona) con:
+Crea `~/www/espol_club_api/.env` (no se versiona) con:
 
 ```bash
 DJANGO_SETTINGS_MODULE=config.settings.prod
@@ -157,7 +175,7 @@ mkdir -p /home/espol-club/media
 ## 5. Migraciones y datos iniciales
 
 ```bash
-cd ~/www/espolclub
+cd ~/www/espol_club_api
 
 # No hace falta exportar nada: manage.py lee el .env antes de arrancar Django,
 # y de ahí toma también DJANGO_SETTINGS_MODULE.
@@ -198,8 +216,8 @@ En el panel: **Web → Sitios → Añadir un sitio**.
 | Campo | Valor |
 | :--- | :--- |
 | Tipo | **Python WSGI** |
-| Ruta de la aplicación | `/home/espol-club/www/espolclub/config/wsgi.py` |
-| Working directory | `/home/espol-club/www/espolclub` |
+| Ruta de la aplicación | `/home/espol-club/www/espol_club_api/config/wsgi.py` |
+| Working directory | `/home/espol-club/www/espol_club_api` |
 | Python | **3.12** o superior |
 | Virtualenv | `/home/espol-club/venv-espolclub` |
 | Dirección | `espol-club.alwaysdata.net` (o tu dominio) |
@@ -248,7 +266,7 @@ membresías no se congelan al cerrar el período y los códigos QR no caducan.
 En el panel: **Avanzado → Tareas programadas**. Para cada una, el comando es:
 
 ```
-/home/espol-club/venv-espolclub/bin/python /home/espol-club/www/espolclub/manage.py <comando>
+/home/espol-club/venv-espolclub/bin/python /home/espol-club/www/espol_club_api/manage.py <comando>
 ```
 
 | Comando | Frecuencia | Qué hace |
@@ -271,7 +289,7 @@ Las tareas no necesitan variables de entorno adicionales: `manage.py` lee el
 ejecute **desde el directorio del proyecto**, para que encuentre ese archivo:
 
 ```
-cd /home/espol-club/www/espolclub && /home/espol-club/venv-espolclub/bin/python manage.py freeze_expired_memberships
+cd /home/espol-club/www/espol_club_api && /home/espol-club/venv-espolclub/bin/python manage.py freeze_expired_memberships
 ```
 
 ---
@@ -279,7 +297,7 @@ cd /home/espol-club/www/espolclub && /home/espol-club/venv-espolclub/bin/python 
 ## 9. Actualizar el despliegue
 
 ```bash
-cd ~/www/espolclub
+cd ~/www/espol_club_api
 git pull
 ~/venv-espolclub/bin/pip install -r requirements.txt
 ~/venv-espolclub/bin/python manage.py migrate
