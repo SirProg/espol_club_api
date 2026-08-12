@@ -2,16 +2,18 @@
 Punto de entrada WSGI.
 
 AlwaysData apunta su sitio a este archivo y espera encontrar el callable
-``application``. El módulo de settings se toma de la variable de entorno
-DJANGO_SETTINGS_MODULE, que se define en el panel del sitio; el valor por
-defecto es el de desarrollo para que ejecutar el servidor local siga siendo
-posible sin configurar nada.
+``application``.
+
+El módulo de settings se resuelve leyendo primero el ``.env``, de modo que
+``DJANGO_SETTINGS_MODULE=config.settings.prod`` dentro de ese archivo surta
+efecto. Si el panel del alojamiento define la variable en el entorno del sitio,
+esa gana: el ``.env`` no pisa lo que ya está puesto.
 """
 
-import os
+from config.bootstrap import load_environment
 
-from django.core.wsgi import get_wsgi_application
+load_environment()
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.dev")
+from django.core.wsgi import get_wsgi_application  # noqa: E402
 
 application = get_wsgi_application()

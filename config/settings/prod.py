@@ -6,6 +6,8 @@ ningún valor específico del alojamiento: se puede desplegar en otro proveedor
 cambiando variables, sin tocar código.
 """
 
+from pathlib import Path
+
 from .base import *  # noqa: F403
 from .base import BASE_DIR, env, env_bool, env_list
 
@@ -90,7 +92,9 @@ MIDDLEWARE = MIDDLEWARE[:1] + [  # noqa: F405
 MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.smtp.EmailBackend",
-        "HOST": env("EMAIL_HOST", "smtp-espolclub.alwaysdata.net"),
+        # Sin valor por defecto: un host inventado haría que el envío falle
+        # en silencio y nadie podría verificar su cuenta.
+        "HOST": env("EMAIL_HOST", ""),
         "PORT": int(env("EMAIL_PORT", "587")),
         "USER": env("EMAIL_HOST_USER", ""),
         "PASSWORD": env("EMAIL_HOST_PASSWORD", ""),
@@ -98,7 +102,7 @@ MAILERS = {
     },
 }
 
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "no-reply@espolclub.alwaysdata.net")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "")
 
 # ---------------------------------------------------------------------------
 # Registro de eventos
@@ -107,7 +111,13 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", "no-reply@espolclub.alwaysdata.ne
 # Con DEBUG=False Django no muestra las trazas, así que sin esto un error 500
 # sería invisible. Los errores van a un archivo que se puede leer por SSH.
 
-LOG_DIR = env("DJANGO_LOG_DIR") or (BASE_DIR / "logs")
+LOG_DIR = Path(env("DJANGO_LOG_DIR") or (BASE_DIR / "logs"))
+
+# Se crea si no existe. Sin esto, un directorio ausente hace que Django **no
+# arranque**: falla al configurar el handler de logging, mucho antes de servir
+# nada. Y el error es de los peores de diagnosticar, porque lo que se rompe es
+# justamente el mecanismo con el que se registran los errores.
+LOG_DIR.mkdir(parents=True, exist_ok=True)
 
 LOGGING = {
     "version": 1,

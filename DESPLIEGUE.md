@@ -53,7 +53,7 @@ En el panel: **Bases de datos → MySQL → Añadir una base de datos**.
 
 | Campo | Valor |
 | :--- | :--- |
-| Nombre | `espolclub_api` (AlwaysData le antepone tu cuenta: `micuenta_espolclub_api`) |
+| Nombre | `api` — AlwaysData le antepone la cuenta y queda `espol-club_api` |
 | Usuario | crea uno dedicado, no uses el administrador de la cuenta |
 | Codificación | **`utf8mb4`** |
 | Colación | `utf8mb4_uca1400_ai_ci` (MariaDB) o `utf8mb4_0900_ai_ci` (MySQL) |
@@ -73,7 +73,7 @@ Anota **host, nombre, usuario y contraseña**: van al archivo `.env` del paso 4.
 Por SSH, en tu cuenta de AlwaysData:
 
 ```bash
-ssh micuenta@ssh-micuenta.alwaysdata.net
+ssh espol-club@ssh-espol-club.alwaysdata.net
 cd ~/www
 git clone <url-de-tu-repositorio> espolclub
 cd espolclub
@@ -114,26 +114,26 @@ Crea `~/www/espolclub/.env` (no se versiona) con:
 DJANGO_SETTINGS_MODULE=config.settings.prod
 DJANGO_SECRET_KEY=<pega aquí la clave generada abajo>
 DJANGO_DEBUG=False
-DJANGO_ALLOWED_HOSTS=espolclub.alwaysdata.net
-DJANGO_CSRF_TRUSTED_ORIGINS=https://espolclub.alwaysdata.net
+DJANGO_ALLOWED_HOSTS=espol-club.alwaysdata.net
+DJANGO_CSRF_TRUSTED_ORIGINS=https://espol-club.alwaysdata.net
 
-DB_NAME=micuenta_espolclub_api
-DB_USER=micuenta_espolclub
+DB_NAME=espol-club_api
+DB_USER=espol-club
 DB_PASSWORD=<la contraseña del paso 1>
-DB_HOST=mysql-micuenta.alwaysdata.net
+DB_HOST=mysql-espol-club.alwaysdata.net
 DB_PORT=3306
 
 # Fuera del árbol del proyecto: un despliegue no debe borrar los PDF subidos.
-DJANGO_MEDIA_ROOT=/home/micuenta/media
-DJANGO_LOG_DIR=/home/micuenta/logs
+DJANGO_MEDIA_ROOT=/home/espol-club/media
+DJANGO_LOG_DIR=/home/espol-club/logs
 
 # Correo: sin esto nadie puede verificar su cuenta (RF-01) ni recuperar
 # su contraseña (RF-03), y el sistema queda inutilizable para usuarios nuevos.
-EMAIL_HOST=smtp-micuenta.alwaysdata.net
+EMAIL_HOST=smtp-espol-club.alwaysdata.net
 EMAIL_PORT=587
-EMAIL_HOST_USER=no-reply@espolclub.alwaysdata.net
+EMAIL_HOST_USER=no-reply@espol-club.alwaysdata.net
 EMAIL_HOST_PASSWORD=<contraseña del buzón>
-DEFAULT_FROM_EMAIL=no-reply@espolclub.alwaysdata.net
+DEFAULT_FROM_EMAIL=no-reply@espol-club.alwaysdata.net
 
 # Orígenes del frontend que consumirá la API (la app React Native en desarrollo
 # con Expo, y el dominio del panel web cuando exista).
@@ -146,10 +146,10 @@ Genera la clave secreta con:
 ~/venv-espolclub/bin/python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Crea los directorios que declaraste:
+Crea el directorio de subidas (el de logs se crea solo al arrancar):
 
 ```bash
-mkdir -p /home/micuenta/media /home/micuenta/logs
+mkdir -p /home/espol-club/media
 ```
 
 ---
@@ -158,8 +158,9 @@ mkdir -p /home/micuenta/media /home/micuenta/logs
 
 ```bash
 cd ~/www/espolclub
-export $(grep -v '^#' .env | xargs)   # carga el .env en esta sesión
 
+# No hace falta exportar nada: manage.py lee el .env antes de arrancar Django,
+# y de ahí toma también DJANGO_SETTINGS_MODULE.
 ~/venv-espolclub/bin/python manage.py migrate
 ~/venv-espolclub/bin/python manage.py collectstatic --noinput
 ```
@@ -197,11 +198,11 @@ En el panel: **Web → Sitios → Añadir un sitio**.
 | Campo | Valor |
 | :--- | :--- |
 | Tipo | **Python WSGI** |
-| Ruta de la aplicación | `/home/micuenta/www/espolclub/config/wsgi.py` |
-| Working directory | `/home/micuenta/www/espolclub` |
+| Ruta de la aplicación | `/home/espol-club/www/espolclub/config/wsgi.py` |
+| Working directory | `/home/espol-club/www/espolclub` |
 | Python | **3.12** o superior |
-| Virtualenv | `/home/micuenta/venv-espolclub` |
-| Dirección | `espolclub.alwaysdata.net` (o tu dominio) |
+| Virtualenv | `/home/espol-club/venv-espolclub` |
+| Dirección | `espol-club.alwaysdata.net` (o tu dominio) |
 
 En **Variables de entorno** del sitio, añade como mínimo:
 
@@ -225,17 +226,17 @@ activan HSTS.
 ~/venv-espolclub/bin/python manage.py check --deploy
 
 # 2. La API responde.
-curl -s https://espolclub.alwaysdata.net/api/v1/catalogs/ | head -c 300
+curl -s https://espol-club.alwaysdata.net/api/v1/catalogs/ | head -c 300
 
 # 3. El admin carga con sus estilos (verifica que collectstatic funcionó).
-#    Abre https://espolclub.alwaysdata.net/admin/ en el navegador.
+#    Abre https://espol-club.alwaysdata.net/admin/ en el navegador.
 ```
 
 `/api/v1/catalogs/` es el endpoint ideal para la primera prueba: es público
 —el formulario de registro lo necesita antes de que exista ninguna cuenta— y
 devuelve las 7 facultades y 8 áreas si la base está bien migrada.
 
-Si algo falla, el registro de errores está en `/home/micuenta/logs/espolclub.log`.
+Si algo falla, el registro de errores está en `/home/espol-club/logs/espolclub.log`.
 
 ---
 
@@ -247,7 +248,7 @@ membresías no se congelan al cerrar el período y los códigos QR no caducan.
 En el panel: **Avanzado → Tareas programadas**. Para cada una, el comando es:
 
 ```
-/home/micuenta/venv-espolclub/bin/python /home/micuenta/www/espolclub/manage.py <comando>
+/home/espol-club/venv-espolclub/bin/python /home/espol-club/www/espolclub/manage.py <comando>
 ```
 
 | Comando | Frecuencia | Qué hace |
@@ -265,11 +266,12 @@ nada — útil para comprobarlos la primera vez:
 ~/venv-espolclub/bin/python manage.py freeze_expired_memberships --dry-run
 ```
 
-Recuerda que la tarea programada necesita las variables de entorno. Si el panel
-no las hereda, antepón la carga del `.env`:
+Las tareas no necesitan variables de entorno adicionales: `manage.py` lee el
+`.env` del proyecto por sí mismo. Lo único imprescindible es que el comando se
+ejecute **desde el directorio del proyecto**, para que encuentre ese archivo:
 
 ```
-cd /home/micuenta/www/espolclub && export $(grep -v '^#' .env | xargs) && /home/micuenta/venv-espolclub/bin/python manage.py freeze_expired_memberships
+cd /home/espol-club/www/espolclub && /home/espol-club/venv-espolclub/bin/python manage.py freeze_expired_memberships
 ```
 
 ---
@@ -279,7 +281,6 @@ cd /home/micuenta/www/espolclub && export $(grep -v '^#' .env | xargs) && /home/
 ```bash
 cd ~/www/espolclub
 git pull
-export $(grep -v '^#' .env | xargs)
 ~/venv-espolclub/bin/pip install -r requirements.txt
 ~/venv-espolclub/bin/python manage.py migrate
 ~/venv-espolclub/bin/python manage.py collectstatic --noinput
@@ -294,7 +295,7 @@ el proceso recargue el código.
 
 Cuando construyas el cliente, esto es lo que necesitas saber de la API.
 
-**Base:** `https://espolclub.alwaysdata.net/api/v1/`
+**Base:** `https://espol-club.alwaysdata.net/api/v1/`
 
 ### Autenticación
 

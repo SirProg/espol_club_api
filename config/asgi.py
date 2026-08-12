@@ -1,16 +1,9 @@
-"""
-ASGI config for config project.
+"""Punto de entrada ASGI. Mismo criterio que ``wsgi.py``."""
 
-It exposes the ASGI callable as a module-level variable named ``application``.
+from config.bootstrap import load_environment
 
-For more information on this file, see
-https://docs.djangoproject.com/en/6.1/howto/deployment/asgi/
-"""
+load_environment()
 
-import os
-
-from django.core.asgi import get_asgi_application
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings.dev')
+from django.core.asgi import get_asgi_application  # noqa: E402
 
 application = get_asgi_application()
