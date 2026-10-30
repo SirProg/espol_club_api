@@ -146,10 +146,17 @@ class Command(BaseCommand):
 
     def _reset(self, *, noinput):
         acronyms = [club["acronym"] for club in espol_data.CLUBS]
+        # Solo el rango de demostración (202490xxx), no todo "2024": con ese
+        # prefijo, el reset borraría también a los estudiantes reales de la
+        # cohorte 2024 que se hayan registrado.
+        demo_prefix = (
+            f"{espol_data.DEMO_ENROLLMENT_PREFIX}"
+            f"{espol_data.DEMO_ENROLLMENT_START // 1000}"
+        )
         enrollments = list(
-            Student.objects.filter(
-                enrollment__startswith=espol_data.DEMO_ENROLLMENT_PREFIX
-            ).values_list("enrollment", flat=True)
+            Student.objects.filter(enrollment__startswith=demo_prefix).values_list(
+                "enrollment", flat=True
+            )
         )
 
         confirm_destructive(
@@ -191,7 +198,9 @@ class Command(BaseCommand):
         students = []
         used_emails = set(Student.objects.values_list("email", flat=True))
 
-        total = 70
+        # Unos 40 clubes consumen 39 líderes y llenan sus nóminas con el resto:
+        # con menos cuentas no quedarían estudiantes sin club.
+        total = 120
         for index in range(total):
             first = self.random.choice(espol_data.FIRST_NAMES)
             last = self.random.choice(espol_data.LAST_NAMES)
@@ -597,7 +606,13 @@ class Command(BaseCommand):
             )
             created.append(
                 # El offset negativo solo marca que hay que moverlo al pasado.
-                {"event": event, "club": club, "offset": -1, "date": spec["date"]}
+                {
+                    "event": event,
+                    "club": club,
+                    "offset": -1,
+                    "date": spec["date"],
+                    "end_date": spec.get("end_date"),
+                }
             )
         return created
 
@@ -693,9 +708,13 @@ class Command(BaseCommand):
                 start = (now + datetime.timedelta(days=item["offset"])).replace(
                     hour=event.planned_hour.hour, minute=0, second=0, microsecond=0
                 )
+            # Los eventos de varios días terminan el último día publicado.
+            end_day = item.get("end_date") or start.date()
             event.planned_date = start.date()
             event.planned_hour = start.time()
-            event.end_datetime = start + datetime.timedelta(hours=3)
+            event.end_datetime = start.replace(
+                year=end_day.year, month=end_day.month, day=end_day.day
+            ) + datetime.timedelta(hours=3)
             event.registration_deadline = start - datetime.timedelta(hours=6)
             event.save()
 

@@ -85,7 +85,7 @@ imprimen en la consola** del `runserver` en lugar de enviarse.
 
 | Comando | Qué hace |
 | :--- | :--- |
-| `seed_espol_data` | Crea 19 clubes reales de ESPOL, unas 70 cuentas, 5 PAO, eventos, solicitudes y trámites. Admite `--reset`, `--noinput` y `--seed N`. Puede usarse en producción |
+| `seed_espol_data` | Crea 40 clubes reales de ESPOL, unas 120 cuentas, 5 PAO, eventos, solicitudes y trámites. Admite `--reset`, `--noinput` y `--seed N`. Puede usarse en producción |
 | `seed_demo_data` | Conjunto reducido del documento maestro. Solo funciona con `DEBUG=True` |
 | `provision_gbp_admin <código>` | Crea o promueve una cuenta de administrador GBP. Este perfil no tiene auto-registro |
 | `createsuperuser` | Crea un superusuario para `/admin/`. Se inicia sesión con la matrícula, no con un nombre de usuario |

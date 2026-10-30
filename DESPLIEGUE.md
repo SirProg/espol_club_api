@@ -153,9 +153,12 @@ EMAIL_HOST_USER=no-reply@espol-club.alwaysdata.net
 EMAIL_HOST_PASSWORD=<contraseña del buzón>
 DEFAULT_FROM_EMAIL=no-reply@espol-club.alwaysdata.net
 
-# Orígenes del frontend que consumirá la API (la app React Native en desarrollo
-# con Expo, y el dominio del panel web cuando exista).
-CORS_ALLOWED_ORIGINS=http://localhost:8081,http://localhost:19006
+# Orígenes que consumen la API: el web publicado en InfinityFree y la app
+# React Native en desarrollo con Expo. Separados por comas, sin espacios.
+CORS_ALLOWED_ORIGINS=https://clubes-espol.42web.io,http://localhost:8081,http://localhost:19006
+
+# Base de los enlaces de los correos de verificación y recuperación: el web.
+FRONTEND_BASE_URL=https://clubes-espol.42web.io
 ```
 
 Genera la clave secreta con:
@@ -304,8 +307,8 @@ cd ~/www/espol_club_api
 ~/venv-espolclub/bin/python manage.py seed_espol_data
 ```
 
-Genera 19 clubes con sus descripciones oficiales —tomadas del portal de la
-Unidad de Bienestar Politécnico—, ~70 cuentas de demostración, cinco períodos
+Genera 40 clubes con sus descripciones oficiales —tomadas del portal de la
+Unidad de Bienestar Politécnico—, ~120 cuentas de demostración, cinco períodos
 académicos, eventos pasados con asistencia registrada y futuros con inscripción
 abierta, solicitudes en los tres estados y trámites GBP en los cuatro.
 

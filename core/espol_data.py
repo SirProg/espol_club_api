@@ -92,13 +92,16 @@ CATEGORY_TO_AREAS = {
 # ---------------------------------------------------------------------------
 #
 # Los 18 que publica el portal de la Unidad de Bienestar Politécnico
-# (https://oe.espol.edu.ec/clubes-y-organizaciones/), más CIAP, que no está en
-# el portal pero sí en la página de grupos estudiantiles de la FIEC. Todos los
-# datos se verificaron contra las páginas de ``sources``:
+# (https://oe.espol.edu.ec/clubes-y-organizaciones/); después, los que solo
+# aparecen en las páginas de grupos estudiantiles de las facultades, y el CDS,
+# que publica la Unidad de Sostenibilidad. Todos los datos se verificaron
+# contra las páginas de ``sources``:
 #
-# * ``description`` es literal del portal; la de CIAP, de la página de la FIEC.
-#   La excepción es ACP: el portal solo publica su nombre, y en su lugar va una
-#   frase que lo dice en vez de una descripción inventada.
+# * ``description`` es literal: del portal cuando el club está ahí, y si no,
+#   de la página que lo lista. Se omite la línea "Correo: ..." con la que las
+#   facultades cierran algunas descripciones. La excepción es ACP: el portal
+#   solo publica su nombre, y en su lugar va una frase que lo dice en vez de
+#   una descripción inventada.
 # * ``faculty`` es la facultad cuya página de grupos estudiantiles lista al
 #   club. ``None`` si ninguna lo hace: son clubes abiertos a todas las carreras.
 # * ``location`` es la oficina de la página de infraestructura de la FIEC
@@ -111,8 +114,11 @@ CATEGORY_TO_AREAS = {
 # ``areas`` y ``size`` son lo único elegido aquí. ``size`` solo dimensiona la
 # nómina de demostración, que es ficticia.
 #
-# Quedan fuera los clubes de las facultades que no están en el portal y cuya
-# descripción no es más que su nombre, o que no se ha revisado todavía.
+# Quedan fuera los clubes cuya descripción publicada no es más que su nombre
+# (CADIEC, Suitcase, 593 Guides), los que no tienen descripción en ninguna
+# fuente legible (CERIT, CARI, IEEE-HKN Nu Zeta, Club Fotográfico, Club de
+# Emprendedores, Inecyc, Slow Food, AIROS) y las asociaciones de estudiantes de
+# cada facultad, que no son clubes.
 
 _OE = "https://oe.espol.edu.ec/wp-content/uploads"
 _PORTAL = "https://oe.espol.edu.ec/clubes-y-organizaciones/"
@@ -123,6 +129,18 @@ _FICT_GROUPS = "https://www.fict.espol.edu.ec/es/grupos-estudiantiles"
 _FCNM_GROUPS = "https://www.fcnm.espol.edu.ec/es/grupos-estudiantiles"
 _FCSH_GROUPS = "https://www.fcsh.espol.edu.ec/es/grupos-estudiantiles"
 _FADCOM_GROUPS = "https://www.fadcom.espol.edu.ec/es/grupos-estudiantiles"
+_FIMCM_GROUPS = "https://www.fimcm.espol.edu.ec/es/grupos-estudiantiles"
+_I3LAB = "https://www.i3lab.org/clubes-y-capitulos"
+_SOSTENIBILIDAD = "https://sostenibilidad.espol.edu.ec/comunidad"
+
+
+def _logo(faculty, path):
+    """Logo publicado en la página de grupos estudiantiles de una facultad."""
+    return (
+        f"https://www.{faculty}.espol.edu.ec/sites/default/files/styles/"
+        f"teacher_photo/public/{path}"
+    )
+
 
 CLUBS = [
     {
@@ -196,8 +214,9 @@ CLUBS = [
             {"network": "Sitio ESPOL", "link": "http://taws.oe.espol.edu.ec/"},
             {"network": "Facebook", "link": "https://www.facebook.com/tawsespol/"},
             {"network": "X", "link": "https://twitter.com/TawsEspol"},
+            {"network": "Instagram", "link": "https://www.instagram.com/taws_espol"},
         ],
-        "sources": [_PORTAL, _FIEC_GROUPS],
+        "sources": [_PORTAL, _FIEC_GROUPS, _I3LAB],
     },
     {
         "acronym": "MECATRÓNICA",
@@ -547,8 +566,467 @@ CLUBS = [
         "image": f"{_OE}/2014/09/accion.png",
         "social_media": [
             {"network": "Sitio ESPOL", "link": "http://accionuniversitaria.oe.espol.edu.ec/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/accionistaespol"},
         ],
-        "sources": [_PORTAL],
+        "sources": [_PORTAL, _I3LAB],
+    },
+    # -- Solo en las páginas de las facultades -----------------------------
+    {
+        "acronym": "PHYCOM",
+        "name": "PHYCOM",
+        "description": (
+            "Impulsa el aprendizaje de electrónica, programación y robótica con "
+            "proyectos creativos, inclusivos e interdisciplinarios; "
+            "experimentando la tecnología de forma tangible, combinando "
+            "ciencia, arte y resolución de problemas."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIEC",
+        "location": "FIEC, Campus Gustavo Galindo",
+        "areas": ["Tecnología", "Arte"],
+        "size": "pequeño",
+        "image": _logo("fiec", "2025-06/logo_phycom_0.png?itok=8vgIKYLL"),
+        "social_media": [
+            {"network": "Linktree", "link": "https://linktr.ee/phycom"},
+            {"network": "Instagram", "link": "https://www.instagram.com/phycom_espol"},
+        ],
+        "sources": [_FIEC_GROUPS, _I3LAB],
+    },
+    {
+        "acronym": "IEEE",
+        "name": "Rama Estudiantil IEEE – ESPOL",
+        "description": (
+            "Organización sin fines de lucro, que fomenta y promueve la "
+            "investigación, desarrollando así el interés de los futuros "
+            "ingenieros en la consecución de avances tecnológicos."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIEC",
+        "location": "FIEC, Bloque 11D, oficina 11D-O002",
+        "areas": ["Tecnología", "Académico"],
+        "size": "grande",
+        "image": _logo("fiec", "2023-08/logo%20Ieee.png?itok=lV7Fql4h"),
+        "social_media": [
+            {"network": "Sitio web", "link": "https://site.ieee.org/sb-espol/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/ieee.espol/"},
+            {"network": "LinkedIn", "link": "https://www.linkedin.com/company/ieee-espol/"},
+        ],
+        "sources": [_FIEC_GROUPS, _FIEC_INFRA],
+    },
+    {
+        "acronym": "SPE",
+        "name": "SPE ESPOL — Society of Petroleum Engineers",
+        "description": (
+            "El Capítulo Estudiantil de la Sociedad de Ingenieros de Petróleo, "
+            "fundado en Ecuador el 1 de junio de 1994, enriquece el campo "
+            "profesional con talleres y prácticas académicas."
+        ),
+        "category": "Profesionales",
+        "faculty": "FICT",
+        "location": "FICT, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "mediano",
+        "image": _logo("fict", "2023-07/FICT-logoSPE.png?itok=MjcCjZJY"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/espolspe/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/ESPOLSPE"},
+            {"network": "X", "link": "https://x.com/ESPOLSPE"},
+            {"network": "LinkedIn", "link": "https://www.linkedin.com/in/spe-espol-71953b204/"},
+        ],
+        "sources": [_FICT_GROUPS],
+    },
+    {
+        "acronym": "ACI",
+        "name": "ACI ESPOL — American Concrete Institute",
+        "description": (
+            "La misión del capítulo estudiantil es capacitar a sus miembros en "
+            "competencias técnicas del cemento y hormigón aprovechando los "
+            "programas que ofrece el American Concrete Institute (ACI)."
+        ),
+        "category": "Profesionales",
+        "faculty": "FICT",
+        "location": "FICT, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fict", "2023-07/ACI%20%281%29.png?itok=h9s7Bq56"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/aci_espol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/aciespol"},
+            {"network": "X", "link": "https://x.com/ACI_ESPOL"},
+            {
+                "network": "LinkedIn",
+                "link": "https://www.linkedin.com/in/aci-espol-student-chapter-093872174/",
+            },
+        ],
+        "sources": [_FICT_GROUPS],
+    },
+    {
+        "acronym": "SME",
+        "name": "SME ESPOL — Society for Mining, Metallurgy & Exploration",
+        "description": (
+            "La misión de este capítulo es que sus miembros se encuentren entre "
+            "los profesionales más formados, titulares y exitosos de la "
+            "industria de los minerales."
+        ),
+        "category": "Profesionales",
+        "faculty": "FICT",
+        "location": "FICT, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fict", "2023-07/FICT-logoSME.png?itok=IJRdeDf7"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/smeespol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/espolsme"},
+            {"network": "X", "link": "https://x.com/SME_ESPOL"},
+        ],
+        "sources": [_FICT_GROUPS],
+    },
+    {
+        "acronym": "IAHR",
+        "name": "IAHR ESPOL — International Association for Hydro-Environment Engineering and Research",
+        "description": (
+            "El Capítulo Estudiantil IAHR-ESPOL tiene el compromiso de fomentar "
+            "el interés en la trascendencia de los temas hidroambientales, a "
+            "través de la conexión intelectual en las distintas disciplinas "
+            "académicas que oferta la ESPOL."
+        ),
+        "category": "Profesionales",
+        "faculty": "FICT",
+        "location": "FICT, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fict", "2024-02/logo_iahr-espol_oficial.png?itok=nCIjnEGt"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/iahrespol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/IAHRESPOL"},
+            {"network": "X", "link": "https://twitter.com/IAHRESPOL"},
+            {"network": "YouTube", "link": "https://www.youtube.com/@iahrespol1521"},
+        ],
+        "sources": [_FICT_GROUPS],
+    },
+    {
+        "acronym": "ASHRAE",
+        "name": (
+            "ASHRAE — Sociedad Americana de Ingenieros en Calefacción, "
+            "Refrigeración y Aire Acondicionado"
+        ),
+        "description": (
+            "Es una organización diversa dedicada a promover las artes y las "
+            "ciencias de calefacción, ventilación, aire acondicionado y "
+            "refrigeración para servir a la humanidad y promover un mundo "
+            "sostenible."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Tecnología"],
+        "size": "pequeño",
+        "image": _logo("fimcp", "2023-09/logo%20ASHRAE.jpg?itok=-oQAKhqx"),
+        "social_media": [
+            {"network": "Facebook", "link": "https://www.facebook.com/ashrae.espol"},
+            {"network": "Instagram", "link": "https://www.instagram.com/ashrae_espol/"},
+            {"network": "X", "link": "https://x.com/ashrae_espol"},
+        ],
+        "sources": [_FIMCP_GROUPS],
+    },
+    {
+        "acronym": "AWS",
+        "name": "AWS — Sociedad Americana de Soldadura",
+        "description": (
+            "Dirigido a estudiantes de carreras pertenecientes a la FIMCP. La "
+            "Sociedad Americana de Soldadura (AWS) reconoce la importancia de "
+            "adquirir vasto conocimiento en el tema de fusionar materiales."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Tecnología"],
+        "size": "pequeño",
+        "image": _logo("fimcp", "2023-09/logo%20AWS.jpg?itok=dOO0QMpw"),
+        "social_media": [
+            {"network": "Facebook", "link": "https://www.facebook.com/awsespol/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/awsespol"},
+        ],
+        "sources": [_FIMCP_GROUPS, _I3LAB],
+    },
+    {
+        "acronym": "CIMAT",
+        "name": "CIMAT — Club de Ingeniería en Materiales",
+        "description": (
+            "Es un capítulo estudiantil dedicado a acercar a los estudiantes "
+            "interesados en la ingeniería de los materiales y a conocer todo lo "
+            "relacionado a estos."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fimcp", "2023-09/logo%20CIMAT.jpg?itok=pyK98X6T"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/club_cimat/"},
+            {
+                "network": "Facebook",
+                "link": (
+                    "https://www.facebook.com/people/"
+                    "CIMATClub-de-Ciencia-e-Ingenier%C3%ADa-en-Materiales/100041334229219/"
+                ),
+            },
+            {"network": "X", "link": "https://x.com/CCimat"},
+            {"network": "LinkedIn", "link": "https://www.linkedin.com/in/club-cimat-9528ba216/"},
+        ],
+        "sources": [_FIMCP_GROUPS],
+    },
+    {
+        "acronym": "MAEC",
+        "name": "MAEC — Mecánica Automotriz ESPOL Club",
+        "description": (
+            "Integrado por estudiantes quienes motivan y propagan el "
+            "conocimiento de la mecánica automotriz con la práctica en base a "
+            "los conocimientos académicos recibidos, con el fin de desarrollar "
+            "profesionales capaces de gestionar, dirigir e innovar proyectos "
+            "asociados a la rama."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Tecnología", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fimcp", "2023-09/logo%20maec.jpg?itok=oOO5hc3d"),
+        # La FIMCP solo publica su correo.
+        "social_media": [],
+        "sources": [_FIMCP_GROUPS],
+    },
+    {
+        "acronym": "RAS",
+        "name": "RAS / IEEE — Sociedad de Robótica & Automatización",
+        "description": (
+            "Nuestro capítulo lucha por el avance de la teoría y práctica de la "
+            "ingeniería, ciencia de la robótica y la automatización, las artes "
+            "y ciencias afines, y por el mantenimiento de altos estándares "
+            "profesionales entre sus miembros."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Tecnología", "Ciencia"],
+        "size": "pequeño",
+        "image": _logo("fimcp", "2023-09/logo%20IEEEE.jpg?itok=TeP-druQ"),
+        "social_media": [
+            {"network": "Facebook", "link": "https://www.facebook.com/RASESPOL/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/ras_espol/"},
+        ],
+        "sources": [_FIMCP_GROUPS],
+    },
+    {
+        "acronym": "ROBOTA",
+        "name": "ROBOTA — Club de Robótica",
+        "description": (
+            "El club se dedica a la construcción de prototipos de robótica de "
+            "competición, así como a proyectos de investigación y desarrollo "
+            "en diversos campos (social, médico, industrial, etc.)."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
+        "areas": ["Tecnología", "Ciencia"],
+        "size": "mediano",
+        "image": _logo("fimcp", "2023-09/logo%20Robota.jpg?itok=0PpljKKs"),
+        "social_media": [
+            {"network": "Facebook", "link": "https://www.facebook.com/robotaespol"},
+            {"network": "Instagram", "link": "https://www.instagram.com/club_robotica_robota/"},
+            {"network": "X", "link": "https://x.com/CLUB_ROBOTA"},
+        ],
+        "sources": [_FIMCP_GROUPS],
+    },
+    {
+        "acronym": "AICHE",
+        "name": "AIChE – ESPOL",
+        "description": (
+            "Un capítulo de AIChE Global (American Institute of Chemical "
+            "Engineers) que se enfoca en el desarrollo académico complementario "
+            "a estudiantes de Ing. Química y carreras afines. Se realizan foros "
+            "de industria, charlas con profesionales del área industrial y "
+            "profesores, ayudantías para los alumnos sobre materias de la "
+            "carrera, además de actividades sociales."
+        ),
+        "category": "Profesionales",
+        "faculty": "FCNM",
+        "location": "FCNM, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "mediano",
+        "image": _logo("fcnm", "2023-08/FCNM%20logo%20AIChE.webp?itok=wbqJk7Z-"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/aiche.espol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/AIChE.ESPOL1"},
+        ],
+        "sources": [_FCNM_GROUPS, _I3LAB],
+    },
+    {
+        "acronym": "D.A.T.A",
+        "name": "D.A.T.A Club — Data Analysis Technology Algorithms Club",
+        "description": (
+            "Un club estudiantil que busca impulsar y promover el desarrollo de "
+            "conocimientos estadísticos para la comunidad politécnica y la "
+            "sociedad en general, brindando oportunidades para aprender y "
+            "discutir la transversalidad de la estadística en distintas áreas, "
+            "desarrollando habilidades profesionales."
+        ),
+        "category": "Profesionales",
+        "faculty": "FCNM",
+        "location": "FCNM, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Tecnología"],
+        "size": "pequeño",
+        "image": _logo("fcnm", "2023-08/FCNM%20logo%20DATA.webp?itok=SjMS4yPn"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/dataclubec/"},
+        ],
+        "sources": [_FCNM_GROUPS],
+    },
+    {
+        "acronym": "MATES",
+        "name": "MatEs",
+        "description": (
+            "Un club estudiantil que invita a conocer el mundo de las "
+            "matemáticas por medio de actividades divulgativas y académicas, "
+            "como conversatorios, sesiones de estudio y clases; entrenamientos "
+            "y participación en olimpiadas de matemática, nacionales e "
+            "internacionales; escuelas de matemáticas."
+        ),
+        "category": "Profesionales",
+        "faculty": "FCNM",
+        "location": "FCNM, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo("fcnm", "2025-08/clubmates.png?itok=SPxT5M83"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/mates_espol/"},
+        ],
+        "sources": [_FCNM_GROUPS],
+    },
+    {
+        "acronym": "ALUCINE",
+        "name": "ALUCINE — Club de Cine de ESPOL",
+        "description": (
+            "Alucine es una familia de amigos unida por la experiencia "
+            "colectiva de ver, vivir y compartir la pasión por el séptimo arte. "
+            "Se realizan diferentes actividades dentro del club, como "
+            "proyecciones, cine coloquios y cine ciclos de diferentes películas."
+        ),
+        "category": "Culturales",
+        "faculty": "FADCOM",
+        "location": "FADCOM, Campus Gustavo Galindo",
+        "areas": ["Arte", "Cultura"],
+        "size": "mediano",
+        "image": _logo(
+            "fadcom", "2023-08/logo%20club%20alucine%20218x160.webp?itok=v6Z3BOrR"
+        ),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/alucineclub/"},
+        ],
+        "sources": [_FADCOM_GROUPS],
+    },
+    {
+        "acronym": "D-PRO",
+        "name": "D-PRO — Club de Diseño de Productos",
+        "description": (
+            "Nuestro propósito es fomentar la creatividad, el pensamiento "
+            "crítico y la innovación a través de actividades que integran "
+            "teoría, práctica y trabajo colaborativo."
+        ),
+        "category": "Profesionales",
+        "faculty": "FADCOM",
+        "location": "FADCOM, Campus Gustavo Galindo",
+        "areas": ["Arte", "Emprendimiento"],
+        "size": "pequeño",
+        "image": _logo("fadcom", "2025-05/logo_dpro_218x160_wepg.webp?itok=VKhuOhJ6"),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/clubdpro/"},
+        ],
+        "sources": [_FADCOM_GROUPS],
+    },
+    {
+        "acronym": "BREIK",
+        "name": "BREIK — Club de Cobertura y Comunicación Audiovisual",
+        "description": (
+            "La principal función del club es la cobertura de eventos, donde "
+            "todo se plasma en fotografías y cápsulas audiovisuales. Asimismo, "
+            "se imparten talleres de fotografía, edición y se realizan "
+            "concursos de fotografía."
+        ),
+        "category": "Culturales",
+        "faculty": "FADCOM",
+        "location": "FADCOM, Campus Gustavo Galindo",
+        "areas": ["Arte", "Cultura"],
+        "size": "pequeño",
+        "image": _logo(
+            "fadcom", "2023-08/logo%20club%20breik%20218x160.webp?itok=35ckW1KM"
+        ),
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/breikgye/"},
+        ],
+        "sources": [_FADCOM_GROUPS],
+    },
+    {
+        "acronym": "SNAME",
+        "name": "SNAME",
+        "description": (
+            "Su misión es avanzar en el arte, la ciencia y la práctica de la "
+            "Arquitectura Naval, Ingeniería Naval, Ingeniería Oceánica y otras "
+            "profesiones relacionadas con el mar."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCM",
+        "location": "FIMCM, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Tecnología"],
+        "size": "pequeño",
+        "image": _logo("fimcm", "2023-08/logo%20FIMCM%20-%20SNAME.webp?itok=YAwySz24"),
+        # La FIMCM no publica enlaces propios del club.
+        "social_media": [],
+        "sources": [_FIMCM_GROUPS],
+    },
+    {
+        "acronym": "OKEANOS",
+        "name": "Okeanos",
+        "description": (
+            "Club de desarrollo investigativo y planteamiento de proyectos "
+            "oceanográficos/ambientales de la ESPOL"
+        ),
+        "category": "Profesionales",
+        "faculty": "FIMCM",
+        "location": "FIMCM, Campus Gustavo Galindo",
+        "areas": ["Ciencia", "Académico"],
+        "size": "pequeño",
+        "image": _logo(
+            "fimcm", "2023-08/logo%20FIMCM%20-%20Okeanos_400x400.webp?itok=vrabr_pI"
+        ),
+        "social_media": [],
+        "sources": [_FIMCM_GROUPS],
+    },
+    # -- Publicado por la Unidad de Sostenibilidad -------------------------
+    {
+        "acronym": "CDS",
+        "name": "Club de Desarrollo Sostenible",
+        "description": (
+            "El Club de Desarrollo Sostenible se constituye formalmente en 2020 "
+            "con la visión de ser un referente en la promoción de los ODS en la "
+            "comunidad ESPOL. A través de proyectos, visitas técnicas, "
+            "capacitaciones, acciones de voluntariado en centros y áreas de "
+            "conservación, entre otras actividades, el club fomenta una cultura "
+            "de sostenibilidad activa y participativa."
+        ),
+        "category": "Competencias transversales",
+        "faculty": None,
+        "location": "Campus Gustavo Galindo",
+        "areas": ["Social", "Ciencia"],
+        "size": "mediano",
+        # Sin logo: la página de Sostenibilidad no publica uno identificable.
+        "image": "",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://cds.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/cds_espol/"},
+        ],
+        "sources": [_SOSTENIBILIDAD, _I3LAB],
     },
     {
         # Único club que se siembra SIN líder resuelto: el catálogo tiene que
@@ -567,8 +1045,9 @@ CLUBS = [
         "image": f"{_OE}/2021/10/Logo_ACP_negro-e1633622108994.png",
         "social_media": [
             {"network": "Sitio ESPOL", "link": "http://acp.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/acp_club"},
         ],
-        "sources": [_PORTAL],
+        "sources": [_PORTAL, _I3LAB],
     },
 ]
 
@@ -630,6 +1109,27 @@ EVENT_TOPICS = {
     "ARQUEOLOGÍA": ["arqueología del Litoral", "cerámica precolombina", "patrimonio"],
     "ACUP": ["liderazgo y servicio", "voluntariado universitario", "ética"],
     "ACP": ["difusión cultural", "gestión de eventos artísticos"],
+    "PHYCOM": ["Arduino creativo", "electrónica interactiva", "robótica educativa"],
+    "IEEE": ["redacción de artículos científicos", "IoT aplicado", "liderazgo IEEE"],
+    "SPE": ["ingeniería de yacimientos", "perforación de pozos", "producción petrolera"],
+    "ACI": ["diseño de mezclas de hormigón", "ensayos de materiales", "cemento"],
+    "SME": ["operaciones mineras", "exploración geológica", "seguridad minera"],
+    "IAHR": ["modelación hidráulica", "gestión de recursos hídricos", "hidrología"],
+    "ASHRAE": ["climatización eficiente", "refrigeración industrial", "ventilación"],
+    "AWS": ["soldadura por arco", "inspección de soldaduras", "metalurgia"],
+    "CIMAT": ["caracterización de materiales", "polímeros", "corrosión"],
+    "MAEC": ["motores de combustión", "diagnóstico automotriz", "vehículos eléctricos"],
+    "RAS": ["ROS para principiantes", "control de robots", "visión artificial"],
+    "ROBOTA": ["robots de competición", "seguidores de línea", "sumo robótico"],
+    "AICHE": ["simulación de procesos", "termodinámica química", "seguridad industrial"],
+    "D.A.T.A": ["R para análisis de datos", "estadística aplicada", "visualización"],
+    "MATES": ["olimpiadas de matemática", "cálculo avanzado", "teoría de números"],
+    "ALUCINE": ["cine latinoamericano", "crítica cinematográfica", "cortometrajes"],
+    "D-PRO": ["prototipado rápido", "diseño industrial", "modelado 3D"],
+    "BREIK": ["fotografía de eventos", "edición de video", "cobertura audiovisual"],
+    "SNAME": ["diseño de embarcaciones", "hidrodinámica naval", "estructuras navales"],
+    "OKEANOS": ["oceanografía", "monitoreo costero", "conservación marina"],
+    "CDS": ["Objetivos de Desarrollo Sostenible", "compostaje", "voluntariado ambiental"],
 }
 
 #: Eventos reales, publicados por el club o por ESPOL. Sustituyen a los eventos
@@ -701,6 +1201,46 @@ REAL_EVENTS = {
                 "Robots”, una experiencia donde los asistentes exploraron "
                 "modelos de Inteligencia Artificial aplicados al análisis de "
                 "patrones."
+            ),
+        },
+    ],
+    # https://www.fict.espol.edu.ec/es/noticias/ecuamining-2026-reunio-en-salinas-mas-de-120-participantes-del-sector-minero-y-geologico-y
+    # Lo organiza SME-ESPOL con la Carrera de Minas; IAHR y AAPG figuran como
+    # coorganizadores. La página escribe "CUAMINEING"; el nombre va como el
+    # del titular de la noticia.
+    "SME": [
+        {
+            "event_name": "ECUAMINING 2026 — Congreso Universitario de Minería y Geología",
+            "date": datetime.date(2026, 10, 17),
+            "end_date": datetime.date(2026, 10, 18),
+            "mode": "In-person",
+            "planned_place": "Hotel Colón Salinas, Santa Elena",
+            "description": (
+                "La 8.ª edición del congreso, organizada por el Capítulo "
+                "Estudiantil SME-ESPOL y la Carrera de Minas de ESPOL."
+            ),
+        },
+    ],
+    "IAHR": [
+        {
+            "event_name": "ECUAMINING 2026 — Congreso Universitario de Minería y Geología",
+            "date": datetime.date(2026, 10, 17),
+            "end_date": datetime.date(2026, 10, 18),
+            "mode": "In-person",
+            "planned_place": "Hotel Colón Salinas, Santa Elena",
+            "description": "IAHR-ESPOL figura entre los coorganizadores del congreso.",
+        },
+    ],
+    "AAPG": [
+        {
+            "event_name": "ECUAMINING 2026 — Congreso Universitario de Minería y Geología",
+            "date": datetime.date(2026, 10, 17),
+            "end_date": datetime.date(2026, 10, 18),
+            "mode": "In-person",
+            "planned_place": "Hotel Colón Salinas, Santa Elena",
+            "description": (
+                "AAPG ESPOL Student Chapter figura entre los coorganizadores del "
+                "congreso."
             ),
         },
     ],
