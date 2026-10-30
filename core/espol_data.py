@@ -91,18 +91,38 @@ CATEGORY_TO_AREAS = {
 # Clubes
 # ---------------------------------------------------------------------------
 #
-# Los 18 que el portal publica **con descripción oficial**. El texto de
-# ``description`` es literal de la fuente.
+# Los 18 que publica el portal de la Unidad de Bienestar Politécnico
+# (https://oe.espol.edu.ec/clubes-y-organizaciones/), más CIAP, que no está en
+# el portal pero sí en la página de grupos estudiantiles de la FIEC. Todos los
+# datos se verificaron contra las páginas de ``sources``:
 #
-# Quedan fuera siete que aparecen solo en un formulario de pedidos, sin
-# descripción publicada (ASHRAE, Club de Emprendedores, Club Fotográfico, IAHR,
-# Inecyc, Robota, Slow Food): inventarles texto sería mezclar datos verificados
-# con ficción sin marcar la diferencia.
+# * ``description`` es literal del portal; la de CIAP, de la página de la FIEC.
+#   La excepción es ACP: el portal solo publica su nombre, y en su lugar va una
+#   frase que lo dice en vez de una descripción inventada.
+# * ``faculty`` es la facultad cuya página de grupos estudiantiles lista al
+#   club. ``None`` si ninguna lo hace: son clubes abiertos a todas las carreras.
+# * ``location`` es la oficina de la página de infraestructura de la FIEC
+#   cuando existe. Si no, solo la facultad o el campus, sin inventar una sala.
+# * ``image`` es el logo del portal (o de la facultad, si el del portal no
+#   carga) y ``social_media``, los enlaces que publican el portal y las
+#   facultades. Los sitios ``*.oe.espol.edu.ec`` van en http, como los publica
+#   el portal: varios tienen el certificado vencido.
 #
-# ``faculty`` y ``location`` son atribuciones plausibles según el ámbito de cada
-# club, no dato oficial: el portal no publica su sede. La excepción son los
-# clubes con ``sources``: sus datos se verificaron contra esas páginas, y
-# ``image`` y ``social_media`` solo existen en ellos.
+# ``areas`` y ``size`` son lo único elegido aquí. ``size`` solo dimensiona la
+# nómina de demostración, que es ficticia.
+#
+# Quedan fuera los clubes de las facultades que no están en el portal y cuya
+# descripción no es más que su nombre, o que no se ha revisado todavía.
+
+_OE = "https://oe.espol.edu.ec/wp-content/uploads"
+_PORTAL = "https://oe.espol.edu.ec/clubes-y-organizaciones/"
+_FIEC_GROUPS = "https://www.fiec.espol.edu.ec/es/grupos-estudiantiles"
+_FIEC_INFRA = "https://www.fiec.espol.edu.ec/es/infraestructura"
+_FIMCP_GROUPS = "https://www.fimcp.espol.edu.ec/es/grupos-estudiantiles"
+_FICT_GROUPS = "https://www.fict.espol.edu.ec/es/grupos-estudiantiles"
+_FCNM_GROUPS = "https://www.fcnm.espol.edu.ec/es/grupos-estudiantiles"
+_FCSH_GROUPS = "https://www.fcsh.espol.edu.ec/es/grupos-estudiantiles"
+_FADCOM_GROUPS = "https://www.fadcom.espol.edu.ec/es/grupos-estudiantiles"
 
 CLUBS = [
     {
@@ -114,27 +134,47 @@ CLUBS = [
             "aprendizaje de software, hardware y tecnologías libres."
         ),
         "category": "Profesionales",
-        # Figura entre los grupos estudiantiles de la FIEC. No publica sala de
-        # reunión, así que la ubicación se queda en la facultad.
         "faculty": "FIEC",
-        "location": "FIEC, Campus Gustavo Galindo",
+        "location": "FIEC, Bloque 11D, oficina 11D-O003",
         "areas": ["Tecnología", "Académico", "Ciencia"],
         "size": "grande",
-        "image": "https://oe.espol.edu.ec/wp-content/uploads/2014/11/kokoa.png",
+        "image": f"{_OE}/2014/11/kokoa.png",
         "social_media": [
             {"network": "Sitio web", "link": "https://www.kokoa.club/"},
-            {"network": "Sitio ESPOL", "link": "https://kokoa.oe.espol.edu.ec/"},
+            {"network": "Sitio ESPOL", "link": "http://kokoa.oe.espol.edu.ec/"},
             {"network": "Instagram", "link": "https://www.instagram.com/kokoa_espol/"},
-            {"network": "X", "link": "https://x.com/kokoa_espol"},
+            {"network": "Facebook", "link": "https://www.facebook.com/kokoaespol/"},
+            {"network": "X", "link": "https://twitter.com/kokoaespol"},
             {"network": "GitHub", "link": "https://github.com/kokoaespol"},
             {"network": "YouTube", "link": "https://www.youtube.com/@kokoaespol1"},
             {"network": "Linktree", "link": "https://linktr.ee/kokoaespol"},
         ],
-        "sources": [
-            "https://oe.espol.edu.ec/clubes-y-organizaciones/",
-            "https://www.fiec.espol.edu.ec/es/grupos-estudiantiles",
-            "https://www.kokoa.club/events",
+        "sources": [_PORTAL, _FIEC_GROUPS, _FIEC_INFRA, "https://www.kokoa.club/events"],
+    },
+    {
+        "acronym": "CIAP",
+        "name": "Club de Inteligencia Artificial Politécnico",
+        "description": (
+            "Promovemos el aprendizaje e investigación, en inteligencia "
+            "artificial y análisis de datos, ofreciendo talleres, conferencias "
+            "y proyectos colaborativos para desarrollar habilidades aplicables "
+            "en el entorno empresarial."
+        ),
+        "category": "Profesionales",
+        "faculty": "FIEC",
+        "location": "FIEC, Bloque 11D",
+        "areas": ["Tecnología", "Ciencia", "Académico"],
+        "size": "mediano",
+        "image": (
+            "https://www.fiec.espol.edu.ec/sites/default/files/styles/"
+            "teacher_photo/public/2025-06/logo_ciap_1.png?itok=fnPcneE9"
+        ),
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://ciap.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/ciap_espol"},
+            {"network": "GitHub", "link": "https://github.com/CiapEspol"},
         ],
+        "sources": [_FIEC_GROUPS, _FIEC_INFRA],
     },
     {
         "acronym": "TAWS",
@@ -148,9 +188,16 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FIEC",
-        "location": "FIEC, Laboratorio de Investigación",
+        "location": "FIEC, Campus Gustavo Galindo",
         "areas": ["Tecnología", "Académico"],
         "size": "grande",
+        "image": f"{_OE}/2015/01/taws.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://taws.oe.espol.edu.ec/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/tawsespol/"},
+            {"network": "X", "link": "https://twitter.com/TawsEspol"},
+        ],
+        "sources": [_PORTAL, _FIEC_GROUPS],
     },
     {
         "acronym": "MECATRÓNICA",
@@ -158,31 +205,52 @@ CLUBS = [
         "description": (
             "El Club de Mecatrónica tiene por objeto impulsar el desarrollo de "
             "competencias en el ámbito tecnológico, particularmente en el "
-            "desarrollo de sistemas mecatrónicos, IOT, manufactura aditiva, "
+            "desarrollo de sistemas mecatrónicas, IOT, manufactura aditiva, "
             "software y aplicaciones para el control y automatización de "
             "procesos."
         ),
         "category": "Profesionales",
         "faculty": "FIMCP",
-        "location": "FIMCP, Taller de Prototipado",
+        "location": "FIMCP, Campus Gustavo Galindo",
         "areas": ["Tecnología", "Ciencia"],
         "size": "mediano",
+        # El logo del portal devuelve 404; este es el de la FIMCP.
+        "image": (
+            "https://www.fimcp.espol.edu.ec/sites/default/files/styles/"
+            "teacher_photo/public/2023-09/logo%20Club-de-mecatr%C3%B3nica.jpg"
+            "?itok=TdEAfezL"
+        ),
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://clubmecatronica.oe.espol.edu.ec/"},
+            {
+                "network": "Facebook",
+                "link": "https://www.facebook.com/Club-Mecatr%C3%B3nica-ESPOL-584070041803082/",
+            },
+            {"network": "Instagram", "link": "https://www.instagram.com/club_mecatronica_espol/"},
+            {"network": "X", "link": "https://x.com/club_espol"},
+        ],
+        "sources": [_PORTAL, _FIMCP_GROUPS],
     },
     {
         "acronym": "NIOT",
-        "name": "Networking e Internet de las Cosas",
+        "name": "Grupo estudiantil NIoT",
         "description": (
             "Cooperamos con la sociedad del conocimiento en el desarrollo de "
-            "aplicaciones web y móviles integrados con servicios telemáticos, "
+            "Aplicaciones web y móviles integrados con servicios telemáticos, "
             "internet de las Cosas, tecnologías de la Información y la "
             "Comunicación, para la formación académica de estudiantes e "
             "investigadores."
         ),
         "category": "Profesionales",
         "faculty": "FIEC",
-        "location": "FIEC, Laboratorio de Telemática",
+        "location": "FIEC, Bloque 11D, oficina 11D-O104",
         "areas": ["Tecnología", "Académico"],
         "size": "mediano",
+        "image": f"{_OE}/2020/08/NIoT_logo-e1598887865900.png",
+        # Ni el portal ni la FIEC publican enlaces: la FIEC muestra
+        # "@ClubNiotEspol", pero el enlace apunta a su propia portada.
+        "social_media": [],
+        "sources": [_PORTAL, _FIEC_GROUPS, _FIEC_INFRA],
     },
     {
         "acronym": "MSP",
@@ -193,9 +261,15 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FIEC",
-        "location": "FIEC, Sala de Estudiantes",
+        "location": "FIEC, Bloque 11F, oficina 11F-O109",
         "areas": ["Tecnología", "Emprendimiento"],
         "size": "mediano",
+        "image": f"{_OE}/2020/09/CELULA-ESTUDIANTIL.png",
+        # La FIEC enlaza también https://celula.espol.edu.ec/, que no responde.
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://celula.oe.espol.edu.ec/"},
+        ],
+        "sources": [_PORTAL, _FIEC_GROUPS, _FIEC_INFRA],
     },
     {
         "acronym": "ASME",
@@ -208,9 +282,17 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FIMCP",
-        "location": "FIMCP, Aula 22A",
+        "location": "FIMCP, Campus Gustavo Galindo",
         "areas": ["Académico", "Tecnología"],
         "size": "mediano",
+        "image": f"{_OE}/2014/09/asme.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://asme.oe.espol.edu.ec/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/ASMEESPOL/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/asme_espol/"},
+            {"network": "X", "link": "https://x.com/ASME_ESPOL"},
+        ],
+        "sources": [_PORTAL, _FIMCP_GROUPS],
     },
     {
         "acronym": "ASCE",
@@ -225,9 +307,18 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FICT",
-        "location": "FICT, Edificio de Ingeniería Civil",
+        "location": "FICT, Campus Gustavo Galindo",
         "areas": ["Académico", "Ciencia"],
         "size": "mediano",
+        "image": f"{_OE}/2020/12/ASCE.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://asce.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/asce.espol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/asce.espol/"},
+            {"network": "X", "link": "https://x.com/asce_espol"},
+            {"network": "LinkedIn", "link": "https://www.linkedin.com/in/asce-espol/"},
+        ],
+        "sources": [_PORTAL, _FICT_GROUPS],
     },
     {
         "acronym": "IIE",
@@ -239,9 +330,22 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FIMCP",
-        "location": "FIMCP, Aula 18B",
+        "location": "FIMCP, Campus Gustavo Galindo",
         "areas": ["Académico", "Emprendimiento"],
         "size": "pequeño",
+        "image": f"{_OE}/2014/09/iie.png",
+        # La FIMCP lo lista con su nombre actual, IISE.
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://iie.oe.espol.edu.ec/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/IieEspol/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/iise_espol/"},
+            {"network": "X", "link": "https://x.com/iise_espol"},
+            {
+                "network": "YouTube",
+                "link": "https://www.youtube.com/channel/UCadEFapRPARcNfOBfdcDcLg",
+            },
+        ],
+        "sources": [_PORTAL, _FIMCP_GROUPS],
     },
     {
         "acronym": "IFT",
@@ -253,10 +357,21 @@ CLUBS = [
             "formando líderes y fomentando lazos internacionales."
         ),
         "category": "Profesionales",
-        "faculty": "FCV",
-        "location": "FCV, Laboratorio de Alimentos",
+        "faculty": "FIMCP",
+        "location": "FIMCP, Campus Gustavo Galindo",
         "areas": ["Ciencia", "Académico"],
         "size": "pequeño",
+        "image": f"{_OE}/2020/10/IFT-e1602768041326.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://ift.oe.espol.edu.ec/"},
+            {
+                "network": "Facebook",
+                "link": "https://www.facebook.com/profile.php?id=100010197914639",
+            },
+            {"network": "Instagram", "link": "https://www.instagram.com/ift_espol/"},
+            {"network": "X", "link": "https://x.com/IFT_ESPOL"},
+        ],
+        "sources": [_PORTAL, _FIMCP_GROUPS],
     },
     {
         "acronym": "CLIP",
@@ -269,25 +384,40 @@ CLUBS = [
             "de los estudiantes."
         ),
         "category": "Profesionales",
-        "faculty": "FIMCP",
-        "location": "FIMCP, Aula 20C",
+        "faculty": "FCNM",
+        "location": "FCNM, Campus Gustavo Galindo",
         "areas": ["Académico", "Emprendimiento"],
         "size": "mediano",
+        "image": f"{_OE}/2020/10/CLIP-LOGO-FIN--e1603724968841.png",
+        "social_media": [
+            {"network": "Sitio web", "link": "https://clublogistico.wixsite.com/clipespol"},
+            {"network": "Instagram", "link": "https://www.instagram.com/clip_espol/"},
+        ],
+        "sources": [_PORTAL, _FCNM_GROUPS],
     },
     {
         "acronym": "AAPG",
         "name": "American Association of Petroleum Geologists — Capítulo ESPOL",
         "description": (
-            "Proporcionar a los miembros habilidades que serán valiosas "
+            "Proporcionar a las miembros habilidades que serán valiosas "
             "herramientas para su vida profesional, mediante conferencias, "
             "cursos y diferentes actividades con información actualizada acerca "
             "de la ciencia de la geología del petróleo."
         ),
         "category": "Profesionales",
         "faculty": "FICT",
-        "location": "FICT, Laboratorio de Geología",
+        "location": "FICT, Campus Gustavo Galindo",
         "areas": ["Ciencia", "Académico"],
         "size": "pequeño",
+        "image": f"{_OE}/2020/10/AAPGN-e1602715475382.jpg",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://aapg.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/aapgespol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/AAPGESPOL"},
+            {"network": "X", "link": "https://x.com/AAPGESPOL"},
+            {"network": "LinkedIn", "link": "https://www.linkedin.com/company/aapgespol/"},
+        ],
+        "sources": [_PORTAL, _FICT_GROUPS],
     },
     {
         "acronym": "GISSC",
@@ -300,9 +430,20 @@ CLUBS = [
         ),
         "category": "Profesionales",
         "faculty": "FICT",
-        "location": "FICT, Laboratorio de Geomática",
+        "location": "FICT, Campus Gustavo Galindo",
         "areas": ["Tecnología", "Ciencia"],
         "size": "pequeño",
+        "image": f"{_OE}/2021/06/Logo-GISSC-v01-1.png",
+        "social_media": [
+            {"network": "Instagram", "link": "https://www.instagram.com/gissc_espol/"},
+            {"network": "Facebook", "link": "https://www.facebook.com/GISSC1.ESPOL"},
+            {"network": "X", "link": "https://x.com/gissc_espol"},
+            {
+                "network": "LinkedIn",
+                "link": "https://www.linkedin.com/in/gissc-espol-025652244/",
+            },
+        ],
+        "sources": [_PORTAL, _FICT_GROUPS],
     },
     {
         "acronym": "ARGUMENTUM",
@@ -315,10 +456,15 @@ CLUBS = [
             "competitivos y de socialización a nivel nacional e internacional."
         ),
         "category": "Competencias transversales",
-        "faculty": "FCSH",
-        "location": "FCSH, Auditorio",
+        "faculty": None,
+        "location": "Campus Gustavo Galindo",
         "areas": ["Social", "Académico"],
         "size": "mediano",
+        "image": f"{_OE}/2020/09/ARGUMENTUM.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://argumentum.oe.espol.edu.ec/"},
+        ],
+        "sources": [_PORTAL],
     },
     {
         "acronym": "FANPOL",
@@ -328,30 +474,42 @@ CLUBS = [
             "convertir sus intereses en la cultura y las tendencias de la "
             "sociedad asiática en actividades las cuales pueden compartir "
             "experiencias tanto didácticas como recreativas. El club se divide "
-            "en áreas de especialización: manualidades, gastronomía, cultura y "
-            "expresión artística."
+            "en áreas de especialización en las cuales los miembros pueden "
+            "participar libremente: Manualidades Gastronomía Cultura, y; "
+            "Expresión artística"
         ),
         "category": "Culturales",
-        "faculty": "FADCOM",
-        "location": "FADCOM, Sala de Usos Múltiples",
+        "faculty": None,
+        "location": "Campus Gustavo Galindo",
         "areas": ["Cultura", "Arte"],
         "size": "grande",
+        "image": f"{_OE}/2020/09/FANPOL-e1598968477425.png",
+        "social_media": [
+            {"network": "Sitio web", "link": "https://clubfanpol.wixsite.com/fanpol"},
+        ],
+        "sources": [_PORTAL],
     },
     {
         "acronym": "TWEENING",
         "name": "Tweening — Club de Ilustración y Animación",
         "description": (
             "Club de ilustración, animación y guion. Dentro del club se "
-            "desarrollan actividades que le permiten a cada uno de los miembros "
+            "desarrolla actividades que le permite a cada uno de los miembros "
             "mejorar sus habilidades estéticas y gramaticales. Cada uno de los "
             "proyectos realizados promueve la creatividad y la imaginación, de "
             "modo que creamos piezas originales con estilos diferentes."
         ),
         "category": "Culturales",
         "faculty": "FADCOM",
-        "location": "FADCOM, Laboratorio de Animación",
+        "location": "FADCOM, Campus Gustavo Galindo",
         "areas": ["Arte", "Cultura"],
         "size": "mediano",
+        "image": f"{_OE}/2021/06/LOGO-TWEENING-2-1.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://tweening.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/tweening_club/"},
+        ],
+        "sources": [_PORTAL, _FADCOM_GROUPS],
     },
     {
         "acronym": "ARQUEOLOGÍA",
@@ -364,9 +522,15 @@ CLUBS = [
         ),
         "category": "Culturales",
         "faculty": "FCSH",
-        "location": "FCSH, Museo Arqueológico",
+        "location": "FCSH, Campus Gustavo Galindo",
         "areas": ["Cultura", "Ciencia"],
         "size": "pequeño",
+        "image": f"{_OE}/2021/06/logo_club_arqueolog%C3%ADa2.jpg",
+        "social_media": [
+            {"network": "Facebook", "link": "https://www.facebook.com/ClubArqueologia.ESPOL"},
+            {"network": "Instagram", "link": "https://www.instagram.com/clubarqueologia.espol/"},
+        ],
+        "sources": [_PORTAL, _FCSH_GROUPS],
     },
     {
         "acronym": "ACUP",
@@ -376,10 +540,15 @@ CLUBS = [
             "desde una perspectiva católica."
         ),
         "category": "Competencias transversales",
-        "faculty": "FCSH",
-        "location": "Campus Gustavo Galindo, Capilla",
+        "faculty": None,
+        "location": "Campus Gustavo Galindo",
         "areas": ["Social", "Cultura"],
         "size": "mediano",
+        "image": f"{_OE}/2014/09/accion.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://accionuniversitaria.oe.espol.edu.ec/"},
+        ],
+        "sources": [_PORTAL],
     },
     {
         # Único club que se siembra SIN líder resuelto: el catálogo tiene que
@@ -387,15 +556,19 @@ CLUBS = [
         "acronym": "ACP",
         "name": "Acción Cultural Politécnica",
         "description": (
-            "Agrupación dedicada a la difusión de las artes y la cultura dentro "
-            "de la comunidad politécnica, en articulación con los grupos "
-            "artísticos de ESPOL Cultural."
+            "Club estudiantil de la ESPOL. La Unidad de Bienestar Politécnico "
+            "todavía no publica su descripción."
         ),
         "category": "Culturales",
-        "faculty": "FADCOM",
-        "location": "Teatro ESPOL",
+        "faculty": None,
+        "location": "Campus Gustavo Galindo",
         "areas": ["Cultura", "Arte"],
         "size": "sin_lider",
+        "image": f"{_OE}/2021/10/Logo_ACP_negro-e1633622108994.png",
+        "social_media": [
+            {"network": "Sitio ESPOL", "link": "http://acp.oe.espol.edu.ec/"},
+        ],
+        "sources": [_PORTAL],
     },
 ]
 
@@ -439,6 +612,7 @@ EVENT_TEMPLATES = {
 #: Temas por club, para que los eventos no sean intercambiables entre clubes.
 EVENT_TOPICS = {
     "KOKOA": ["Git y control de versiones", "Linux desde cero", "Python aplicado"],
+    "CIAP": ["Machine Learning", "visión por computador", "análisis de datos"],
     "TAWS": ["React Native", "Ciencia de datos con Pandas", "APIs REST con Django"],
     "MECATRÓNICA": ["Impresión 3D", "Arduino e IoT", "Automatización industrial"],
     "NIOT": ["Redes definidas por software", "Sensores IoT", "Protocolos MQTT"],
@@ -458,7 +632,7 @@ EVENT_TOPICS = {
     "ACP": ["difusión cultural", "gestión de eventos artísticos"],
 }
 
-#: Eventos reales, publicados por el propio club. Sustituyen a los eventos
+#: Eventos reales, publicados por el club o por ESPOL. Sustituyen a los eventos
 #: pasados generados con plantilla; los presentes y futuros se siguen generando,
 #: porque sin ellos no habría a qué inscribirse ni qué escanear.
 #:
@@ -512,6 +686,22 @@ REAL_EVENTS = {
             "mode": "Virtual",
             "planned_place": "Virtual",
             "description": "Fundamentos de análisis y ciencia de datos.",
+        },
+    ],
+    # https://www.i3lab.org/noticias/2025/12/10/expoclubes-2025-creatividad-tecnologa-e-innovacin-brillan-en-la-semana-de-la-innovacin-de-espol
+    "CIAP": [
+        {
+            "event_name": "ExpoClubes 2025",
+            "date": datetime.date(2025, 11, 25),
+            "mode": "In-person",
+            "planned_place": "Lobby del Auditorio STEM",
+            "description": (
+                "Entre los clubes destacados, el Club de Inteligencia "
+                "Artificial Politécnico (CIAP) presentó “Entre Galaxias y "
+                "Robots”, una experiencia donde los asistentes exploraron "
+                "modelos de Inteligencia Artificial aplicados al análisis de "
+                "patrones."
+            ),
         },
     ],
 }

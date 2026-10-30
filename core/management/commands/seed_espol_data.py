@@ -265,7 +265,8 @@ class Command(BaseCommand):
                 description=spec["description"],
                 location=spec["location"],
                 leader_enrollment=leader_enrollment,
-                faculty=faculties[spec["faculty"]],
+                # Los clubes abiertos a todas las carreras no tienen facultad.
+                faculty=faculties[spec["faculty"]] if spec["faculty"] else None,
                 interest_area_ids=[areas[a].id for a in spec["areas"]],
                 image=spec.get("image", ""),
                 social_media=spec.get("social_media"),

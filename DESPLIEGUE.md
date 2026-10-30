@@ -304,8 +304,8 @@ cd ~/www/espol_club_api
 ~/venv-espolclub/bin/python manage.py seed_espol_data
 ```
 
-Genera 18 clubes con sus descripciones oficiales —tomadas del portal de la
-Unidad de Bienestar Politécnico—, ~70 cuentas de demostración, tres períodos
+Genera 19 clubes con sus descripciones oficiales —tomadas del portal de la
+Unidad de Bienestar Politécnico—, ~70 cuentas de demostración, cinco períodos
 académicos, eventos pasados con asistencia registrada y futuros con inscripción
 abierta, solicitudes en los tres estados y trámites GBP en los cuatro.
 

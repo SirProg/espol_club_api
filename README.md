@@ -85,7 +85,7 @@ imprimen en la consola** del `runserver` en lugar de enviarse.
 
 | Comando | Qué hace |
 | :--- | :--- |
-| `seed_espol_data` | Crea 18 clubes reales de ESPOL, unas 70 cuentas, 3 PAO, eventos, solicitudes y trámites. Admite `--reset`, `--noinput` y `--seed N`. Puede usarse en producción |
+| `seed_espol_data` | Crea 19 clubes reales de ESPOL, unas 70 cuentas, 5 PAO, eventos, solicitudes y trámites. Admite `--reset`, `--noinput` y `--seed N`. Puede usarse en producción |
 | `seed_demo_data` | Conjunto reducido del documento maestro. Solo funciona con `DEBUG=True` |
 | `provision_gbp_admin <código>` | Crea o promueve una cuenta de administrador GBP. Este perfil no tiene auto-registro |
 | `createsuperuser` | Crea un superusuario para `/admin/`. Se inicia sesión con la matrícula, no con un nombre de usuario |
@@ -251,4 +251,7 @@ Antes de empezar a operar, cree un **PAO activo** desde `/admin/` o desde
 `POST /api/v1/gbp/pao/`. Sin él, aprobar solicitudes o renovar nóminas falla.
 Configure también las tareas programadas.
 
-La guía completa, paso a paso, está en [`DESPLIEGUE.md`](./DESPLIEGUE.md).
+La guía completa, paso a paso, está en [`DESPLIEGUE.md`](./DESPLIEGUE.md)
+(AlwaysData, con el web en InfinityFree), que es el despliegue actual. Como
+alternativa en evaluación, con el API y el web en una sola instancia de AWS
+Lightsail, ver [`DESPLIEGUE_AWS.md`](./DESPLIEGUE_AWS.md).
