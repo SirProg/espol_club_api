@@ -267,6 +267,8 @@ class Command(BaseCommand):
                 leader_enrollment=leader_enrollment,
                 faculty=faculties[spec["faculty"]],
                 interest_area_ids=[areas[a].id for a in spec["areas"]],
+                image=spec.get("image", ""),
+                social_media=spec.get("social_media"),
             )
             clubs[spec["acronym"]] = {"club": club, "spec": spec}
 
@@ -516,6 +518,14 @@ class Command(BaseCommand):
                 (25, Event.Visibility.MEMBERS_ONLY),
             ]
 
+            real_events = espol_data.REAL_EVENTS.get(acronym)
+            if real_events:
+                # Los reales ocupan el lugar de los pasados de plantilla.
+                plan = [(offset, v) for offset, v in plan if offset >= 0]
+                events.extend(
+                    self._create_real_events(entry["club"], event_form, real_events, now)
+                )
+
             for offset, visibility in plan:
                 template, place, mode = self.random.choice(templates)
                 topic = self.random.choice(topics)
@@ -553,6 +563,42 @@ class Command(BaseCommand):
 
         self.stdout.write(f"  Eventos: {len(events)}")
         return events
+
+    def _create_real_events(self, club, event_form, specs, now):
+        """
+        Da de alta los eventos publicados por el club.
+
+        Nacen en el futuro por la misma razón que los de plantilla, y
+        ``_shift_past_events_and_scan`` los lleva después a su fecha real.
+        """
+        created = []
+        for index, spec in enumerate(specs):
+            start = (now + datetime.timedelta(days=3 + index)).replace(
+                hour=self.random.choice([9, 11, 14, 16]),
+                minute=0,
+                second=0,
+                microsecond=0,
+            )
+            event = create_event(
+                club_id=club.pk,
+                event_name=spec["event_name"],
+                mode=spec["mode"],
+                planned_date=start.date(),
+                planned_hour=start.time(),
+                end_datetime=start + datetime.timedelta(hours=3),
+                planned_place=spec["planned_place"],
+                description=spec["description"],
+                visibility=Event.Visibility.PUBLIC,
+                registration_form_id=event_form.pk,
+                registration_deadline=start - datetime.timedelta(hours=6),
+                blocked_message="El registro para este evento ya cerró.",
+                expected_participants=self.random.choice([20, 30, 50, 80]),
+            )
+            created.append(
+                # El offset negativo solo marca que hay que moverlo al pasado.
+                {"event": event, "club": club, "offset": -1, "date": spec["date"]}
+            )
+        return created
 
     def _seed_registrations_and_attendance(self, events, clubs, students):
         """
@@ -637,9 +683,15 @@ class Command(BaseCommand):
                 continue
 
             event = item["event"]
-            start = (now + datetime.timedelta(days=item["offset"])).replace(
-                hour=event.planned_hour.hour, minute=0, second=0, microsecond=0
-            )
+            if "date" in item:
+                # Evento real: va a la fecha publicada, no a un desplazamiento.
+                start = timezone.make_aware(
+                    datetime.datetime.combine(item["date"], event.planned_hour)
+                )
+            else:
+                start = (now + datetime.timedelta(days=item["offset"])).replace(
+                    hour=event.planned_hour.hour, minute=0, second=0, microsecond=0
+                )
             event.planned_date = start.date()
             event.planned_hour = start.time()
             event.end_datetime = start + datetime.timedelta(hours=3)

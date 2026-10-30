@@ -472,7 +472,7 @@ class CatalogsTests(ApiTestCase):
         response = self.client.get("/api/v1/catalogs/")
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.data["faculties"]), 7)
+        self.assertEqual(len(response.data["faculties"]), 8)
         self.assertEqual(len(response.data["interest_areas"]), 8)
         self.assertEqual(response.data["active_pao"], "2026-I")
 

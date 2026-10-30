@@ -27,44 +27,64 @@ import datetime
 # (Período Académico Extraordinario). Se siembran tres para que el histórico por
 # período (RF-49) y la renovación de nómina (RF-21) tengan contra qué operar.
 
+#
+# Fechas del calendario oficial de grado
+# (https://www.espol.edu.ec/es/vida-politecnica/calendario-grado): el inicio es
+# el lunes de la primera semana de "Actividades formativas" y el fin, el último
+# día de la semana de "PROCESO FINAL".
+
 PAO_PERIODS = [
     {
         "pao_period": "2025-I",
-        "start_date": datetime.date(2025, 5, 5),
+        "start_date": datetime.date(2025, 5, 12),
         "end_date": datetime.date(2025, 9, 19),
         "activate": False,
     },
     {
         "pao_period": "2025-II",
-        "start_date": datetime.date(2025, 10, 13),
-        "end_date": datetime.date(2026, 2, 27),
+        "start_date": datetime.date(2025, 9, 29),
+        "end_date": datetime.date(2026, 2, 13),
         "activate": False,
     },
     {
         "pao_period": "2026-I",
-        "start_date": datetime.date(2026, 5, 4),
+        "start_date": datetime.date(2026, 5, 11),
         "end_date": datetime.date(2026, 9, 18),
+        "activate": False,
+    },
+    {
+        "pao_period": "2026-II",
+        "start_date": datetime.date(2026, 9, 28),
+        "end_date": datetime.date(2027, 2, 12),
         "activate": True,
+    },
+    {
+        "pao_period": "2027-I",
+        "start_date": datetime.date(2027, 5, 10),
+        "end_date": datetime.date(2027, 9, 17),
+        "activate": False,
     },
 ]
 
 #: El período del que se renueva la nómina hacia el vigente.
-PREVIOUS_PAO = "2025-II"
-CURRENT_PAO = "2026-I"
+PREVIOUS_PAO = "2026-I"
+CURRENT_PAO = "2026-II"
 
 # ---------------------------------------------------------------------------
 # Áreas de interés
 # ---------------------------------------------------------------------------
 #
 # ESPOL clasifica sus clubes en: Profesionales, Culturales, Competencias
-# transversales y Grupos deportivos (este último "por ahora no se incluye en el
-# programa"). Esa taxonomía se mapea al catálogo de áreas que ya existe en la
-# base, sin tocar el modelo.
+# transversales y Grupos deportivos. El portal dice que los deportivos "por
+# ahora no se incluye[n] en el programa", pero la categoría se acepta para poder
+# sembrarlos si aparecen. Esa taxonomía se mapea al catálogo de áreas que ya
+# existe en la base, sin tocar el modelo.
 
 CATEGORY_TO_AREAS = {
     "Profesionales": ["Académico", "Tecnología"],
     "Culturales": ["Cultura", "Arte"],
     "Competencias transversales": ["Social", "Académico"],
+    "Grupos deportivos": ["Deporte", "Social"],
 }
 
 # ---------------------------------------------------------------------------
@@ -80,7 +100,9 @@ CATEGORY_TO_AREAS = {
 # con ficción sin marcar la diferencia.
 #
 # ``faculty`` y ``location`` son atribuciones plausibles según el ámbito de cada
-# club, no dato oficial: el portal no publica su sede.
+# club, no dato oficial: el portal no publica su sede. La excepción son los
+# clubes con ``sources``: sus datos se verificaron contra esas páginas, y
+# ``image`` y ``social_media`` solo existen en ellos.
 
 CLUBS = [
     {
@@ -92,10 +114,27 @@ CLUBS = [
             "aprendizaje de software, hardware y tecnologías libres."
         ),
         "category": "Profesionales",
+        # Figura entre los grupos estudiantiles de la FIEC. No publica sala de
+        # reunión, así que la ubicación se queda en la facultad.
         "faculty": "FIEC",
-        "location": "FIEC, Edificio 11D",
-        "areas": ["Tecnología", "Académico"],
+        "location": "FIEC, Campus Gustavo Galindo",
+        "areas": ["Tecnología", "Académico", "Ciencia"],
         "size": "grande",
+        "image": "https://oe.espol.edu.ec/wp-content/uploads/2014/11/kokoa.png",
+        "social_media": [
+            {"network": "Sitio web", "link": "https://www.kokoa.club/"},
+            {"network": "Sitio ESPOL", "link": "https://kokoa.oe.espol.edu.ec/"},
+            {"network": "Instagram", "link": "https://www.instagram.com/kokoa_espol/"},
+            {"network": "X", "link": "https://x.com/kokoa_espol"},
+            {"network": "GitHub", "link": "https://github.com/kokoaespol"},
+            {"network": "YouTube", "link": "https://www.youtube.com/@kokoaespol1"},
+            {"network": "Linktree", "link": "https://linktr.ee/kokoaespol"},
+        ],
+        "sources": [
+            "https://oe.espol.edu.ec/clubes-y-organizaciones/",
+            "https://www.fiec.espol.edu.ec/es/grupos-estudiantiles",
+            "https://www.kokoa.club/events",
+        ],
     },
     {
         "acronym": "TAWS",
@@ -390,6 +429,11 @@ EVENT_TEMPLATES = {
         ("Entrenamiento de {tema}", "Aula {aula}", "In-person"),
         ("Jornada de {tema}", "Campus Gustavo Galindo", "In-person"),
     ],
+    "Grupos deportivos": [
+        ("Entrenamiento abierto de {tema}", "Cancha {aula}", "In-person"),
+        ("Torneo interno de {tema}", "Instalaciones deportivas de ESPOL", "In-person"),
+        ("Clínica de {tema}", "Cancha {aula}", "In-person"),
+    ],
 }
 
 #: Temas por club, para que los eventos no sean intercambiables entre clubes.
@@ -412,6 +456,64 @@ EVENT_TOPICS = {
     "ARQUEOLOGÍA": ["arqueología del Litoral", "cerámica precolombina", "patrimonio"],
     "ACUP": ["liderazgo y servicio", "voluntariado universitario", "ética"],
     "ACP": ["difusión cultural", "gestión de eventos artísticos"],
+}
+
+#: Eventos reales, publicados por el propio club. Sustituyen a los eventos
+#: pasados generados con plantilla; los presentes y futuros se siguen generando,
+#: porque sin ellos no habría a qué inscribirse ni qué escanear.
+#:
+#: Las fuentes no publican la hora: la elige el comando, igual que en los
+#: eventos de plantilla. Nombre, fecha, modalidad, lugar y descripción son
+#: literales.
+REAL_EVENTS = {
+    # https://www.kokoa.club/events
+    "KOKOA": [
+        {
+            "event_name": "FliSol 2025",
+            "date": datetime.date(2025, 5, 31),
+            "mode": "In-person",
+            "planned_place": "Universidad Católica de Santiago de Guayaquil (UCSG)",
+            "description": (
+                "FLISoL es el evento más grande de difusión de Software Libre "
+                "en América Latina. Su objetivo es promover las 4 libertades "
+                "del Software Libre."
+            ),
+        },
+        {
+            "event_name": "Feria Vive ESPOL",
+            "date": datetime.date(2025, 8, 29),
+            "mode": "In-person",
+            "planned_place": "FIEC, ESPOL",
+            "description": (
+                "Evento para mostrar proyectos y compartir con la comunidad de "
+                "FIEC en la feria Vive ESPOL."
+            ),
+        },
+        {
+            "event_name": "Taller KiCAD",
+            "date": datetime.date(2025, 9, 19),
+            "mode": "Virtual",
+            "planned_place": "Virtual",
+            "description": (
+                "Diseño de circuitos electrónicos impresos (PCB) con software "
+                "libre KiCAD."
+            ),
+        },
+        {
+            "event_name": "Taller Open Hardware",
+            "date": datetime.date(2025, 9, 27),
+            "mode": "Virtual",
+            "planned_place": "Virtual",
+            "description": "Introducción al hardware libre y sus aplicaciones.",
+        },
+        {
+            "event_name": "Análisis de Datos",
+            "date": datetime.date(2025, 9, 28),
+            "mode": "Virtual",
+            "planned_place": "Virtual",
+            "description": "Fundamentos de análisis y ciencia de datos.",
+        },
+    ],
 }
 
 # ---------------------------------------------------------------------------
@@ -536,31 +638,39 @@ LAST_NAMES = [
 ]
 
 #: Carrera por facultad, para que el perfil sea coherente con lo que declara.
+#:
+#: Nombres literales de la oferta de grado
+#: (https://www.espol.edu.ec/es/admision/oferta-academica).
 CAREERS_BY_FACULTY = {
     "FIEC": [
-        "Computación", "Telemática", "Electrónica y Automatización",
-        "Telecomunicaciones", "Electricidad",
+        "Ciencia de Datos e Inteligencia Artificial (Hibrido)", "Computación",
+        "Electricidad", "Electrónica y Automatización", "Telecomunicaciones",
+        "Telemática",
     ],
     "FIMCP": [
-        "Ingeniería Mecánica", "Ingeniería Industrial",
-        "Ingeniería en Materiales", "Ingeniería Química",
+        "Alimentos", "Ingeniería Industrial", "Materiales", "Mecánica",
+        "Mecatrónica",
     ],
     "FICT": [
-        "Ingeniería Civil", "Geología", "Minas", "Petróleos",
+        "Geología", "Ingeniería Civil", "Minas", "Petróleos",
     ],
     "FCNM": [
-        "Matemática", "Estadística", "Logística y Transporte",
+        "Estadística", "Ingeniería Química", "Logistica y Transporte",
+        "Matemática",
     ],
     "FCSH": [
-        "Economía", "Administración de Empresas", "Auditoría y Control de Gestión",
-        "Turismo",
+        "Administración de Empresas", "Arqueología",
+        "Auditoría y Control de Gestión", "Economía", "Turismo",
     ],
     "FCV": [
-        "Ingeniería en Alimentos", "Biología", "Acuicultura", "Nutrición",
+        "Biología", "Ingeniería Agrícola y Biológica",
     ],
     "FADCOM": [
+        "Animación Digital y Videojuegos", "Diseño de Productos",
         "Diseño Gráfico", "Producción para Medios de Comunicación",
-        "Diseño de Productos",
+    ],
+    "FIMCM": [
+        "Acuicultura", "Ingeniería Naval", "Oceanografía",
     ],
 }
 

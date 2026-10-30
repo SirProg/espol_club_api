@@ -154,8 +154,8 @@ class FacultyRelationTests(TestCase):
         self.assertIsNone(admin.faculty)
 
     def test_catalogo_de_facultades_sembrado(self):
-        """La migración de datos dejó las 7 facultades provisionales (PPD-01)."""
-        self.assertEqual(Faculty.objects.count(), 7)
+        """La migración de datos dejó las 7 facultades provisionales (PPD-01) más la FIMCM."""
+        self.assertEqual(Faculty.objects.count(), 8)
         self.assertTrue(Faculty.objects.filter(code="FIEC").exists())
 
 

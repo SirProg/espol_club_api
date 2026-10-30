@@ -76,7 +76,7 @@ Los valores de `.env.example` coinciden con la base del paso 1. Si no se define
 ```
 
 Para comprobar que funciona, abra `GET /api/v1/catalogs/`. Es un endpoint
-público y debe devolver 7 facultades y 8 áreas de interés.
+público y debe devolver 8 facultades y 8 áreas de interés.
 
 En desarrollo, los correos de verificación y de recuperación de contraseña **se
 imprimen en la consola** del `runserver` en lugar de enviarse.

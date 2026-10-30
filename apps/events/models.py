@@ -29,6 +29,7 @@ class Event(TimeStampedModel):
         IN_PERSON = "In-person", "Presencial"
         ONLINE = "Online", "En línea"
         VIRTUAL = "Virtual", "Virtual"
+        HYBRID = "Hybrid", "Híbrido"
 
     class Visibility(models.TextChoices):
         PUBLIC = "Public", "Público"

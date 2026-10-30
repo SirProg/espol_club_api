@@ -183,7 +183,7 @@ cd ~/www/espol_club_api
 ~/venv-espolclub/bin/python manage.py collectstatic --noinput
 ```
 
-`migrate` crea las tablas **y siembra los catálogos** (7 facultades y 8 áreas de
+`migrate` crea las tablas **y siembra los catálogos** (8 facultades y 8 áreas de
 interés) mediante una migración de datos idempotente.
 
 ### Cuenta de administración
@@ -252,7 +252,7 @@ curl -s https://espol-club.alwaysdata.net/api/v1/catalogs/ | head -c 300
 
 `/api/v1/catalogs/` es el endpoint ideal para la primera prueba: es público
 —el formulario de registro lo necesita antes de que exista ninguna cuenta— y
-devuelve las 7 facultades y 8 áreas si la base está bien migrada.
+devuelve las 8 facultades y 8 áreas si la base está bien migrada.
 
 Si algo falla, el registro de errores está en `/home/espol-club/logs/espolclub.log`.
 
@@ -420,7 +420,7 @@ el nombre de quien asistió, o con un `code` que distingue los casos:
 - [ ] `check --deploy` sin avisos
 - [ ] `collectstatic` ejecutado y `/admin/` con estilos
 - [ ] HTTPS activo (los settings lo exigen)
-- [ ] `/api/v1/catalogs/` responde con 7 facultades y 8 áreas
+- [ ] `/api/v1/catalogs/` responde con 8 facultades y 8 áreas
 - [ ] Un PAO creado y activo
 - [ ] Administrador GBP provisionado
 - [ ] Las cuatro tareas programadas configuradas
