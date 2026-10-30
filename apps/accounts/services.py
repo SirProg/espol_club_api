@@ -71,7 +71,8 @@ def send_verification_email(student):
     comando— para no sostener una conexión SMTP con la transacción abierta.
     """
     token = build_verification_token(student)
-    url = f"{settings.FRONTEND_BASE_URL}/verificacion.html?token={token}"
+    # Ruta del cliente web (espol-club-web), que lee el token del query.
+    url = f"{settings.FRONTEND_BASE_URL}/verificacion?token={token}"
 
     send_mail(
         subject="Verifica tu cuenta de ESPOLCLUB",
@@ -162,7 +163,7 @@ def request_password_reset(*, email):
         return None
 
     uid, token = build_password_reset_pair(student)
-    url = f"{settings.FRONTEND_BASE_URL}/recuperacion.html?uid={uid}&token={token}"
+    url = f"{settings.FRONTEND_BASE_URL}/recuperacion?uid={uid}&token={token}"
 
     send_mail(
         subject="Restablece tu contraseña de ESPOLCLUB",
