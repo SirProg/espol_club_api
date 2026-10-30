@@ -17,3 +17,6 @@ db.sqlite3
 media/
 staticfiles/
 *.log
+
+# Notas locales con credenciales: nunca al repositorio
+domain.txt
